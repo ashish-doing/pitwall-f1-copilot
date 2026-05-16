@@ -1,0 +1,23 @@
+
+# F1 Sporting Regulations - Key Pit Stop Rules
+
+## Article 23 - Pit Stops
+23.1 During a race, a pit stop is defined as any time a car stops in the pit lane.
+23.2 Each driver must use at least two different compounds during a dry race.
+23.3 The pit lane speed limit is 80 km/h during the race.
+
+## Article 24 - Tyre Compounds
+24.1 Pirelli supplies three dry compounds per race weekend: SOFT, MEDIUM, HARD.
+24.2 Each driver must use at least two different dry compounds during the race.
+24.3 The nominated compounds are announced before each Grand Prix.
+
+## Article 25 - Safety Car Periods
+25.1 During a Safety Car period, pit stops are permitted.
+25.2 Teams often use Safety Car periods to make pit stops without losing track position.
+25.3 The pit lane remains open during Virtual Safety Car periods.
+
+## Pit Stop Strategy Notes
+- Undercut: pit earlier than competitors to gain track position via faster new tyres
+- Overcut: stay out longer on older tyres while competitors pit, then pit later
+- Tyre degradation affects optimal pit window timing
+- Track position is crucial at circuits like Monaco where overtaking is difficult

@@ -7,13 +7,23 @@ MODEL = "granite4:350m"
 def analyze_strategy(race_summary: dict) -> str:
     """Send race summary to Granite for strategy analysis."""
     
-    prompt = f"""You are an expert F1 race strategist. Analyze the following race data and provide:
+    # Get regulation context
+    try:
+        from docling_parser import get_pit_rules_context
+        reg_context = get_pit_rules_context()[:800]
+    except:
+        reg_context = "Standard F1 pit stop rules apply."
+    
+    prompt = f"""You are an expert F1 race strategist. Using the regulations below as context, analyze the race data and provide:
 1. Assessment of the pit stop strategy used
-2. Whether the timing was optimal
+2. Whether the timing was optimal per regulations
 3. What alternative strategy could have been faster
 4. Key insights from the tire compounds used
 
-Race Data:
+REGULATIONS CONTEXT:
+{reg_context}
+
+RACE DATA:
 - Driver: {race_summary['driver']}
 - Grand Prix: {race_summary['grand_prix']} {race_summary['year']}
 - Total Laps: {race_summary['total_laps']}
@@ -21,9 +31,8 @@ Race Data:
 - Pit Stop Laps: {race_summary['pit_stop_laps']}
 - Average Lap Time: {race_summary['avg_lap_time']}s
 - Best Lap Time: {race_summary['best_lap_time']}s
-- Stint Breakdown: {json.dumps(race_summary['stint_breakdown'], indent=2)}
 
-Provide a concise strategic analysis in 3-4 paragraphs."""
+Provide a concise strategic analysis in 3 paragraphs."""
 
     payload = {
         "model": MODEL,
