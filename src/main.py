@@ -106,15 +106,53 @@ with gr.Blocks(title="PitWall — F1 Race Strategy Copilot", theme=gr.themes.Bas
             interactive=False
         )
         
-        pit_btn.click(
+    pit_btn.click(
             fn=get_pit_recommendation,
             inputs=[lap_input, compound_input, tyre_life_input, delta_input],
             outputs=[pit_out]
         )
-    
+
+    with gr.Tab("🤖 RL Pit Optimizer"):
+        gr.Markdown("""
+        ### Reinforcement Learning Pit Window Optimizer
+        Trained on **23,400 lap decisions** from 5 real F1 races (2023-2024).
+        The agent learned optimal pit strategies by observing real tyre degradation patterns.
+        """)
+        with gr.Row():
+            rl_tyre_age = gr.Slider(1, 55, value=25, step=1, label="Tyre Age (laps)")
+            rl_compound = gr.Dropdown(
+                choices=["SOFT", "MEDIUM", "HARD"],
+                value="MEDIUM", label="Compound"
+            )
+        with gr.Row():
+            rl_laps_rem = gr.Slider(1, 60, value=20, step=1, label="Laps Remaining")
+            rl_delta = gr.Number(value=0.8, label="Lap Time Delta vs Best (s)")
+
+        rl_btn = gr.Button("🧠 Get RL Recommendation", variant="primary")
+
+        with gr.Row():
+            rl_rec_out = gr.Textbox(label="RL Agent Decision", lines=2)
+            rl_conf_out = gr.Textbox(label="Confidence", lines=2)
+
+        rl_qval_out = gr.JSON(label="Q-Values (learned policy)")
+
+        def get_rl_rec(tyre_age, compound, laps_rem, delta):
+            from rl_optimizer import get_rl_recommendation
+            result = get_rl_recommendation(int(tyre_age), float(delta),
+                                           int(laps_rem), compound)
+            return (result['recommendation'],
+                    f"{result['confidence']}%",
+                    result['q_values'])
+
+        rl_btn.click(
+            fn=get_rl_rec,
+            inputs=[rl_tyre_age, rl_compound, rl_laps_rem, rl_delta],
+            outputs=[rl_rec_out, rl_conf_out, rl_qval_out]
+        )
+
     gr.Markdown("""
     ---
-    **Tech Stack:** IBM Granite 4.0 (via Ollama) · FastF1 · Gradio · Python
+    **Tech Stack:** IBM Granite 4.0 (via Ollama) · FastF1 · Gradio · Python · Q-Learning RL
     **Data:** Official F1 timing data via FastF1 API
     """)
 
