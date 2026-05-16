@@ -1,6 +1,6 @@
 # 🏎️ PitWall — F1 Race Strategy Copilot
 
-> IBM SkillsBuild AI Builders Challenge — May 2025 Submission
+> IBM SkillsBuild AI Builders Challenge — May 2026 Submission
 
 ## Problem
 F1 race strategy is one of the most complex real-time decision problems in sport. Pit stop timing can win or lose races, yet teams process thousands of data points per second with limited time to act. Small teams and fans have no access to the sophisticated strategy tools used by top F1 teams.
