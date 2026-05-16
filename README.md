@@ -37,11 +37,17 @@ python src/main.py
 ```
 
 ## Project Structure
-src/
-main.py              # Gradio UI
-fastf1_loader.py     # F1 telemetry data pipeline
-granite_engine.py    # IBM Granite integration
-docling_parser.py    # FIA document parser
+
+```
+pitwall-f1-copilot/
+├── src/
+│   ├── main.py              # Gradio UI
+│   ├── fastf1_loader.py     # F1 telemetry data pipeline
+│   ├── granite_engine.py    # IBM Granite integration
+│   └── docling_parser.py    # FIA document parser
+├── requirements.txt
+└── README.md
+```
 
 ## IBM Technologies Used
 - **IBM Granite 4.0 350M** — strategy reasoning and explainability
