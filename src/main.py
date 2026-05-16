@@ -120,4 +120,4 @@ with gr.Blocks(title="PitWall — F1 Race Strategy Copilot", theme=gr.themes.Bas
 
 if __name__ == "__main__":
     print("Starting PitWall...")
-    app.launch(share=False, server_port=7860)
+    app.launch(share=False, server_port=7861)
