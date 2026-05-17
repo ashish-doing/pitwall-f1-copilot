@@ -4,7 +4,8 @@ import pandas as pd
 import os
 import pickle
 
-fastf1.Cache.enable_cache("C:/f1cache")
+os.makedirs("/tmp/f1cache", exist_ok=True)
+fastf1.Cache.enable_cache("/tmp/f1cache")
 
 COMPOUNDS = {'SOFT': 0, 'MEDIUM': 1, 'HARD': 2, 'INTERMEDIATE': 3, 'WET': 4}
 TYRE_AGE_BINS  = [0, 10, 20, 30, 40, 60]

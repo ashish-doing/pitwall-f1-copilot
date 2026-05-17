@@ -4,7 +4,7 @@ import os
 
 # Use HF Inference API for Granite (works on HF Spaces)
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
-HF_API_URL = "https://api-inference.huggingface.co/models/ibm-granite/granite-3.3-8b-instruct"
+API_URL = "https://api-inference.huggingface.co/models/ibm-granite/granite-3.1-8b-instruct"
 
 def query_granite(prompt: str) -> str:
     """Query IBM Granite via HuggingFace Inference API."""
