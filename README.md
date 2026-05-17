@@ -53,18 +53,22 @@ python app.py
 ```
 
 ## Project Structure
+
+```
 pitwall-f1-copilot/
-├── app.py                   # HF Spaces entry point
-├── src/
-│   ├── main.py              # Gradio UI
-│   ├── fastf1_loader.py     # F1 telemetry data pipeline
-│   ├── granite_engine.py    # IBM Granite integration
-│   ├── docling_parser.py    # FIA document parser
-│   └── rl_optimizer.py      # Q-Learning RL agent
-├── data/
-│   └── q_table.pkl          # Trained RL policy
+├── app.py                    # HF Spaces entry point
 ├── requirements.txt
-└── README.md
+├── README.md
+├── data/
+│   ├── q_table.pkl           # Trained RL policy (23,400 updates)
+│   └── f1_regulations_summary.txt
+└── src/
+    ├── main.py               # Local Gradio UI
+    ├── fastf1_loader.py      # F1 telemetry data pipeline
+    ├── granite_engine.py     # IBM Granite integration
+    ├── docling_parser.py     # FIA document parser
+    └── rl_optimizer.py       # Q-Learning RL agent
+```
 
 ## IBM Technologies Used
 - **IBM Granite 3.3 8B** — strategy reasoning and explainability via HuggingFace
