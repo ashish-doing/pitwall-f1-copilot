@@ -2,7 +2,8 @@ import fastf1
 import pandas as pd
 import os
 
-CACHE_DIR = "C:/f1cache"
+CACHE_DIR = "/tmp/f1cache"
+os.makedirs(CACHE_DIR, exist_ok=True)
 fastf1.Cache.enable_cache(CACHE_DIR)
 
 def get_race_session(year: int, grand_prix: str, session_type: str = 'R'):
