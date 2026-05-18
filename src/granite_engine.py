@@ -18,7 +18,7 @@ def query_granite(prompt: str) -> str:
         }
     }
     try:
-        response = requests.post(HF_API_URL, headers=headers, json=payload, timeout=60)
+        response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
         response.raise_for_status()
         result = response.json()
         if isinstance(result, list):
