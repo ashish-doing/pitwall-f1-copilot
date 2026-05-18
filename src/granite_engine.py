@@ -1,31 +1,28 @@
-import requests
-import json
+﻿import requests
 import os
 
-# Use HF Inference API for Granite (works on HF Spaces)
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
-API_URL = "https://api-inference.huggingface.co/models/ibm-granite/granite-3.1-8b-instruct"
+API_URL = "https://api-inference.huggingface.co/v1/chat/completions"
+MODEL_ID = "ibm-granite/granite-3.3-8b-instruct"
 
 def query_granite(prompt: str) -> str:
-    """Query IBM Granite via HuggingFace Inference API."""
-    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+    headers = {
+        "Authorization": f"Bearer {HF_TOKEN}",
+        "Content-Type": "application/json"
+    }
     payload = {
-        "inputs": prompt,
-        "parameters": {
-            "max_new_tokens": 400,
-            "temperature": 0.7,
-            "return_full_text": False
-        }
+        "model": MODEL_ID,
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 400,
+        "temperature": 0.7
     }
     try:
         response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
         response.raise_for_status()
         result = response.json()
-        if isinstance(result, list):
-            return result[0].get('generated_text', 'No response generated.')
-        return str(result)
-    except requests.exceptions.ConnectionError:
-        return "Error: Cannot connect to HuggingFace API."
+        return result["choices"][0]["message"]["content"]
+    except requests.exceptions.HTTPError as e:
+        return f"Error: {e.response.status_code} - {e.response.text[:200]}"
     except Exception as e:
         return f"Error: {str(e)}"
 
@@ -36,9 +33,9 @@ def analyze_strategy(race_summary: dict) -> str:
     except:
         reg_context = "Standard F1 pit stop rules apply."
 
-    prompt = f"""You are an expert F1 race strategist. Using the regulations below as context, analyze the race data and provide:
+    prompt = f"""You are an expert F1 race strategist. Analyze this race data and provide:
 1. Assessment of the pit stop strategy used
-2. Whether the timing was optimal per regulations
+2. Whether the timing was optimal
 3. What alternative strategy could have been faster
 4. Key insights from the tire compounds used
 
@@ -55,7 +52,6 @@ RACE DATA:
 - Best Lap Time: {race_summary['best_lap_time']}s
 
 Provide a concise strategic analysis in 3 paragraphs."""
-
     return query_granite(prompt)
 
 def recommend_pit_window(lap: int, compound: str, tyre_life: int, lap_time_delta: float) -> str:
@@ -67,7 +63,6 @@ def recommend_pit_window(lap: int, compound: str, tyre_life: int, lap_time_delta
 
 Should the driver pit now, in 2-3 laps, or stay out?
 Give a direct recommendation with brief reasoning in 2-3 sentences."""
-
     return query_granite(prompt)
 
 if __name__ == "__main__":
