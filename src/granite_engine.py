@@ -1,26 +1,30 @@
 ﻿import requests
 import os
 
-HF_TOKEN = os.environ.get("HF_TOKEN", "")
-API_URL = "https://router.huggingface.co/hf-inference/v1/chat/completions"
-MODEL_ID = "ibm-granite/granite-4.1-8b-instruct"
+REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN", "")
+API_URL = "https://api.replicate.com/v1/models/ibm-granite/granite-4.1-8b/predictions"
 
 def query_granite(prompt: str) -> str:
     headers = {
-        "Authorization": f"Bearer {HF_TOKEN}",
-        "Content-Type": "application/json"
+        "Authorization": f"Bearer {REPLICATE_API_TOKEN}",
+        "Content-Type": "application/json",
+        "Prefer": "wait"
     }
     payload = {
-        "model": MODEL_ID,
-        "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 400,
-        "temperature": 0.7
+        "input": {
+            "prompt": prompt,
+            "max_tokens": 400,
+            "temperature": 0.7
+        }
     }
     try:
         response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
         response.raise_for_status()
         result = response.json()
-        return result["choices"][0]["message"]["content"]
+        output = result.get("output", "")
+        if isinstance(output, list):
+            return "".join(output)
+        return str(output)
     except requests.exceptions.HTTPError as e:
         return f"Error: {e.response.status_code} - {e.response.text[:200]}"
     except Exception as e:
@@ -66,6 +70,6 @@ Give a direct recommendation with brief reasoning in 2-3 sentences."""
     return query_granite(prompt)
 
 if __name__ == "__main__":
-    print("Testing Granite via HF API...")
+    print("Testing Granite via Replicate...")
     result = recommend_pit_window(25, "MEDIUM", 20, 0.8)
     print(result)
