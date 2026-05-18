@@ -2,8 +2,8 @@
 import os
 
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
-API_URL = "https://api-inference.huggingface.co/v1/chat/completions"
-MODEL_ID = "ibm-granite/granite-3.3-8b-instruct"
+API_URL = "https://router.huggingface.co/hf-inference/v1/chat/completions"
+MODEL_ID = "ibm-granite/granite-4.1-8b-instruct"
 
 def query_granite(prompt: str) -> str:
     headers = {
