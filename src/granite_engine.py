@@ -3,7 +3,7 @@ import os
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL_ID = "ibm-granite/granite-4.1-8b:free"
+MODEL_ID = "meta-llama/llama-3.3-70b-instruct:free"
 
 def query_granite(prompt: str) -> str:
     headers = {
