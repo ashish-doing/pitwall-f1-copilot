@@ -168,8 +168,9 @@ def get_rl_recommendation(tyre_age: int, lap_delta: float,
 
     labels = {0: "✅ STAY OUT", 1: "🔴 PIT NOW", 2: "⚠️ PIT IN 2 LAPS"}
 
-    q_min, q_max = q_values.min(), q_values.max()
-    confidence = float((q_values[action] - q_min) / (q_max - q_min + 1e-6)) * 100
+    sorted_q = np.sort(q_values)[::-1]
+    spread = (sorted_q[0] - sorted_q[1]) / (abs(sorted_q[0]) + 1e-6)
+    confidence = float(np.clip(spread * 180 + 35, 35.0, 95.0))
 
     return {
         "recommendation": labels[action],
