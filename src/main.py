@@ -46,7 +46,7 @@ with gr.Blocks(title="PitWall — F1 Race Strategy Copilot", theme=gr.themes.Bas
     gr.Markdown("""
     # 🏎️ PitWall — F1 Race Strategy Copilot
     **Powered by IBM Granite + FastF1 telemetry data**
-    *IBM SkillsBuild AI Builders Challenge — May 2025*
+    *IBM SkillsBuild AI Builders Challenge — May 2026*
     """)
     
     with gr.Tab("📊 Race Strategy Analysis"):
