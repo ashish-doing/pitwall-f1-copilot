@@ -1,5 +1,6 @@
 ﻿import requests
 import os
+import time
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -16,14 +17,21 @@ def query_granite(prompt: str) -> str:
         "max_tokens": 400,
         "temperature": 0.7
     }
-    try:
-        response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
-        response.raise_for_status()
-        return response.json()["choices"][0]["message"]["content"]
-    except requests.exceptions.HTTPError as e:
-        return f"Error: {e.response.status_code} - {e.response.text[:200]}"
-    except Exception as e:
-        return f"Error: {str(e)}"
+    for attempt in range(3):
+        try:
+            response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
+            if response.status_code == 429:
+                time.sleep(10)
+                continue
+            response.raise_for_status()
+            return response.json()["choices"][0]["message"]["content"]
+        except requests.exceptions.HTTPError as e:
+            if attempt == 2:
+                return f"Error: {e.response.status_code} - {e.response.text[:200]}"
+        except Exception as e:
+            if attempt == 2:
+                return f"Error: {str(e)}"
+    return "Service temporarily unavailable. Please try again."
 
 def analyze_strategy(race_summary: dict) -> str:
     try:
