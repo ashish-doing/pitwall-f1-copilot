@@ -203,9 +203,9 @@ The RL agent was trained and validated on the following races:
 |------|--------|----------------|
 | Monaco Grand Prix | 2024 | ~4,680 |
 | British Grand Prix | 2024 | ~4,680 |
-| Italian Grand Prix | 2023 | ~4,680 |
-| Belgian Grand Prix | 2023 | ~4,680 |
-| Spanish Grand Prix | 2023 | ~4,680 |
+| Bahrain Grand Prix | 2024 | ~4,680 |
+| Silverstone Grand Prix | 2024 | ~4,680 |
+| Bahrain Grand Prix | 2023 | ~4,680 |
 | **Total** | | **23,400** |
 
 Example RL output for Monaco 2024 conditions (tyre age: 25 laps, MEDIUM, 30 laps remaining, +0.8s delta):
