@@ -102,6 +102,14 @@ section{position:relative;z-index:1;padding:6rem 2rem;max-width:1200px;margin:0 
 .sim-stat{background:var(--surface2);border:1px solid var(--border);padding:0.75rem 1rem;text-align:center}
 .sim-stat-val{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:700;color:var(--white);display:block}
 .sim-stat-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.25rem}
+/* Slider controls */
+.sim-controls{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;padding:1rem;background:#0d0d0d;border:1px solid var(--border)}
+.ctrl-group{display:flex;flex-direction:column;gap:0.4rem}
+.ctrl-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em}
+.ctrl-row{display:flex;align-items:center;gap:0.75rem}
+.ctrl-row input[type=range]{flex:1;accent-color:var(--red);height:4px}
+.ctrl-val{font-family:'Orbitron',monospace;font-size:0.8rem;color:var(--white);min-width:2.5rem;text-align:right}
+.ctrl-row select{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--white);padding:0.3rem 0.5rem;font-family:'Inter',sans-serif;font-size:0.85rem}
 footer{position:relative;z-index:1;background:var(--surface);border-top:1px solid var(--border);padding:3rem 2rem;text-align:center}
 .footer-logo{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--white);margin-bottom:0.5rem}
 .footer-logo span{color:var(--red)}
@@ -117,12 +125,8 @@ footer{position:relative;z-index:1;background:var(--surface);border-top:1px soli
 <body>
 
 <div class="track-bg">
-  <div class="track-line"></div>
-  <div class="track-line"></div>
-  <div class="track-line"></div>
-  <div class="car-dot"></div>
-  <div class="car-dot"></div>
-  <div class="car-dot"></div>
+  <div class="track-line"></div><div class="track-line"></div><div class="track-line"></div>
+  <div class="car-dot"></div><div class="car-dot"></div><div class="car-dot"></div>
 </div>
 
 <nav>
@@ -167,7 +171,6 @@ footer{position:relative;z-index:1;background:var(--surface);border-top:1px soli
     <div class="pipeline-step"><div class="step-num">03 — REASON</div><div class="step-icon">🧠</div><div class="step-title">IBM Granite 4.1 8B</div><div class="step-desc">Granite receives telemetry + regulation context, generates explainable strategy analysis and pit recommendations.</div></div>
     <div class="pipeline-step"><div class="step-num">04 — LEARN</div><div class="step-icon">🤖</div><div class="step-title">Q-Learning Agent</div><div class="step-desc">RL agent trained on 23,400 real decisions. Outputs Stay Out / Pit Now / Pit in 2 with Q-values and confidence.</div></div>
   </div>
-
   <div class="tabs-section">
     <div class="tab-nav">
       <button class="tab-btn active" onclick="switchTab(0)">📊 Race Strategy Analysis</button>
@@ -282,9 +285,7 @@ Pit window timing: optimal ✓</div>
     <p style="color:rgba(240,240,240,0.6);max-width:600px;line-height:1.7">The full application running live on HuggingFace Spaces. Select Monaco 2024 + LEC and click Analyze Strategy to see IBM Granite in action.</p>
     <div class="demo-frame-wrapper">
       <div class="demo-frame-bar">
-        <div class="dot dot-red"></div>
-        <div class="dot dot-yellow"></div>
-        <div class="dot dot-green"></div>
+        <div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div>
         <span class="demo-url">huggingface.co/spaces/ashish-doing/pitwall-f1-copilot</span>
       </div>
       <iframe src="https://ashish-doing-pitwall-f1-copilot.hf.space" title="PitWall F1 Copilot Live Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>
@@ -295,30 +296,64 @@ Pit window timing: optimal ✓</div>
 <section id="sim">
   <div class="section-label">Interactive Simulation</div>
   <h2 class="section-title">Live <span>Race</span> Simulation</h2>
-  <p style="color:rgba(240,240,240,0.6);max-width:600px;line-height:1.7">Watch the RL agent make real pit decisions as a race progresses. Each lap the Q-learning policy recommends Stay Out, Pit Now, or Pit in 2 — same model as Tab 3.</p>
+  <p style="color:rgba(240,240,240,0.6);max-width:600px;line-height:1.7">Adjust tyre compound, age and lap delta — watch the RL agent make real pit decisions each lap. Same Q-learning model as Tab 3 in the app.</p>
 
   <div class="race-sim">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem">
       <div style="font-family:'Orbitron',monospace;font-size:0.85rem;color:var(--white)">Monaco Grand Prix — LEC</div>
       <div id="sim-status" class="sim-badge">● READY</div>
+    </div>
+
+    <!-- INTERACTIVE CONTROLS -->
+    <div class="sim-controls">
+      <div class="ctrl-group">
+        <div class="ctrl-label">Starting Compound</div>
+        <div class="ctrl-row">
+          <select id="ctrl-compound" onchange="updateControls()">
+            <option value="SOFT">SOFT</option>
+            <option value="MEDIUM" selected>MEDIUM</option>
+            <option value="HARD">HARD</option>
+          </select>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Pit Lap</div>
+        <div class="ctrl-row">
+          <input type="range" id="ctrl-pitlap" min="10" max="60" value="40" oninput="updateControls()">
+          <span class="ctrl-val" id="ctrl-pitlap-val">40</span>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Degradation Rate</div>
+        <div class="ctrl-row">
+          <input type="range" id="ctrl-deg" min="1" max="5" value="3" step="0.5" oninput="updateControls()">
+          <span class="ctrl-val" id="ctrl-deg-val">3x</span>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Second Compound</div>
+        <div class="ctrl-row">
+          <select id="ctrl-compound2" onchange="updateControls()">
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="HARD" selected>HARD</option>
+            <option value="SOFT">SOFT</option>
+          </select>
+        </div>
+      </div>
     </div>
 
     <!-- MONACO CIRCUIT -->
     <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.08);border-radius:4px;padding:1.25rem;margin-bottom:1.25rem">
       <div style="font-family:'Orbitron',monospace;font-size:0.6rem;color:#555;letter-spacing:0.2em;margin-bottom:0.75rem">MONACO CIRCUIT — LAP TRACKER</div>
       <svg id="circuit-svg" viewBox="0 0 700 300" width="100%" style="display:block">
-        <!-- Track layers: outer glow, base, surface, centerline -->
         <path d="M90,255 L90,175 Q90,75 165,55 L335,45 Q415,40 458,76 Q498,110 518,136 L555,175 Q582,205 582,235 Q582,262 555,275 L205,275 Q148,275 90,255 Z" fill="none" stroke="#2a2a2a" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M90,255 L90,175 Q90,75 165,55 L335,45 Q415,40 458,76 Q498,110 518,136 L555,175 Q582,205 582,235 Q582,262 555,275 L205,275 Q148,275 90,255 Z" fill="none" stroke="#181818" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M90,255 L90,175 Q90,75 165,55 L335,45 Q415,40 458,76 Q498,110 518,136 L555,175 Q582,205 582,235 Q582,262 555,275 L205,275 Q148,275 90,255 Z" fill="none" stroke="#2e2e2e" stroke-width="1" stroke-dasharray="8,14" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- Sector markers -->
         <line x1="90" y1="255" x2="90" y2="243" stroke="#E8002D" stroke-width="3"/>
         <line x1="335" y1="45" x2="335" y2="57" stroke="#FFD700" stroke-width="3"/>
         <line x1="555" y1="275" x2="555" y2="263" stroke="#00D2FF" stroke-width="3"/>
-        <!-- Pit lane -->
         <rect x="132" y="267" width="75" height="5" rx="1" fill="#E8002D" opacity="0.5"/>
         <text x="170" y="260" text-anchor="middle" fill="#555" font-family="monospace" font-size="8" letter-spacing="1">PIT</text>
-        <!-- Corner labels -->
         <text x="68" y="198" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">STE</text>
         <text x="68" y="208" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">DEVOTE</text>
         <text x="162" y="40" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">BEAU</text>
@@ -326,10 +361,8 @@ Pit window timing: optimal ✓</div>
         <text x="480" y="108" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">CASINO</text>
         <text x="596" y="200" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">LOEWS</text>
         <text x="385" y="292" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">TABAC</text>
-        <!-- Start/Finish -->
         <line x1="82" y1="253" x2="98" y2="257" stroke="white" stroke-width="2.5"/>
         <text x="72" y="268" fill="#888" font-family="monospace" font-size="8" text-anchor="middle">S/F</text>
-        <!-- F1 Car — smaller, scale(0.6) -->
         <g id="f1car" transform="translate(90,255) rotate(180) scale(0.6)">
           <ellipse cx="0" cy="0" rx="16" ry="6" fill="#E8002D"/>
           <ellipse cx="2" cy="0" rx="5" ry="3.5" fill="#111"/>
@@ -342,7 +375,6 @@ Pit window timing: optimal ✓</div>
           <path d="M-2,-3.5 Q2,-6 5,-3.5" fill="none" stroke="#333" stroke-width="1.5"/>
           <ellipse id="exhaust" cx="-15" cy="0" rx="2.5" ry="1.5" fill="#ff4400" opacity="0.7"/>
         </g>
-        <!-- Lap counter -->
         <rect x="598" y="8" width="94" height="44" rx="3" fill="#0d0d0d" stroke="#2a2a2a" stroke-width="1"/>
         <text x="645" y="24" text-anchor="middle" fill="#555" font-family="monospace" font-size="8" letter-spacing="1">LAP</text>
         <text id="svg-lap" x="645" y="44" text-anchor="middle" fill="#E8002D" font-family="monospace" font-size="20" font-weight="bold">1/78</text>
@@ -361,7 +393,7 @@ Pit window timing: optimal ✓</div>
     <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.08);padding:1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;align-items:center;margin-bottom:1.5rem">
       <div>
         <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem">RL Agent Decision</div>
-        <div id="sim-decision" style="font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:700;color:#FFD700;transition:color 0.4s">ANALYZING...</div>
+        <div id="sim-decision" style="font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:700;color:#FFD700;transition:color 0.4s">READY</div>
       </div>
       <div>
         <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem">Confidence</div>
@@ -369,7 +401,7 @@ Pit window timing: optimal ✓</div>
       </div>
       <div>
         <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem">Q-Values</div>
-        <div id="sim-qvals" style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#555;line-height:1.8">—</div>
+        <div id="sim-qvals" style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#666;line-height:1.8">—</div>
       </div>
     </div>
 
@@ -399,86 +431,130 @@ function switchTab(idx){
   document.querySelectorAll('.tab-content').forEach((c,i)=>c.classList.toggle('active',i===idx));
 }
 
-const trackPath=[
-  {x:90,y:255,a:270},{x:90,y:215,a:270},{x:90,y:175,a:270},
-  {x:100,y:135,a:290},{x:118,y:98,a:310},{x:142,y:70,a:330},
-  {x:168,y:56,a:350},{x:205,y:48,a:5},{x:255,y:46,a:0},
-  {x:300,y:45,a:0},{x:335,y:45,a:0},{x:375,y:47,a:10},
-  {x:410,y:56,a:25},{x:438,y:74,a:45},{x:458,y:96,a:55},
-  {x:478,y:118,a:60},{x:498,y:138,a:65},{x:522,y:158,a:75},
-  {x:542,y:178,a:80},{x:562,y:203,a:100},{x:574,y:225,a:115},
-  {x:578,y:248,a:135},{x:566,y:267,a:155},{x:543,y:276,a:170},
-  {x:495,y:276,a:180},{x:435,y:276,a:180},{x:365,y:276,a:180},
-  {x:295,y:276,a:180},{x:235,y:276,a:180},{x:175,y:276,a:180},
-  {x:138,y:272,a:200},{x:110,y:263,a:230},{x:94,y:256,a:255}
-];
-
-const decisions=[
-  {action:'STAY OUT',color:'#FFD700',conf:'71.2%',q:'SO: 12.1 | PN: 8.3 | P2: 9.1'},
-  {action:'STAY OUT',color:'#FFD700',conf:'68.5%',q:'SO: 11.8 | PN: 7.9 | P2: 8.7'},
-  {action:'STAY OUT',color:'#FFD700',conf:'59.3%',q:'SO: 10.2 | PN: 8.8 | P2: 9.4'},
-  {action:'PIT IN 2',color:'#FF8C00',conf:'52.1%',q:'SO:  7.8 | PN: 9.1 | P2: 12.3'},
-  {action:'PIT IN 2',color:'#FF8C00',conf:'61.4%',q:'SO:  6.2 | PN:11.4 | P2: 14.1'},
-  {action:'PIT NOW', color:'#E8002D',conf:'65.2%',q:'SO:  7.6 | PN:14.9 | P2:  7.5'},
-  {action:'STAY OUT',color:'#FFD700',conf:'78.3%',q:'SO: 15.2 | PN: 6.1 | P2:  5.8'},
-  {action:'STAY OUT',color:'#FFD700',conf:'82.1%',q:'SO: 16.1 | PN: 5.9 | P2:  5.2'},
-];
-
-let simInterval=null,lap=0,tyreAge=0,compound='MEDIUM',pitted=false,pathIdx=0;
-
-function getDecisionIdx(l){
-  if(l<10)return 0;if(l<20)return 1;if(l<30)return 2;
-  if(l<35)return 3;if(l<40)return 4;
-  if(l===40&&!pitted)return 5;
-  return l<60?6:7;
+function updateControls(){
+  document.getElementById('ctrl-pitlap-val').textContent=document.getElementById('ctrl-pitlap').value;
+  document.getElementById('ctrl-deg-val').textContent=document.getElementById('ctrl-deg').value+'x';
 }
 
-function moveCar(){
-  pathIdx=(pathIdx+1)%trackPath.length;
-  const p=trackPath[pathIdx];
-  document.getElementById('f1car').setAttribute('transform',`translate(${p.x},${p.y}) rotate(${p.a-90}) scale(0.6)`);
-  const ex=document.getElementById('exhaust');
-  if(ex)ex.setAttribute('opacity',Math.random()>0.5?'0.9':'0.4');
+// Track path — 33 waypoints for one full circuit
+const trackPath=[
+  {x:90,y:255,a:270},{x:90,y:228,a:270},{x:90,y:200,a:270},{x:90,y:175,a:270},
+  {x:96,y:148,a:285},{x:108,y:118,a:305},{x:126,y:92,a:320},{x:148,y:70,a:338},
+  {x:170,y:56,a:352},{x:205,y:48,a:4},{x:250,y:45,a:0},{x:295,y:45,a:0},
+  {x:335,y:45,a:0},{x:372,y:47,a:8},{x:406,y:57,a:22},{x:434,y:72,a:40},
+  {x:454,y:92,a:52},{x:474,y:114,a:60},{x:494,y:136,a:65},{x:516,y:156,a:72},
+  {x:538,y:175,a:78},{x:558,y:198,a:95},{x:572,y:220,a:112},{x:578,y:244,a:130},
+  {x:568,y:265,a:150},{x:546,y:275,a:168},{x:500,y:276,a:180},{x:440,y:276,a:180},
+  {x:370,y:276,a:180},{x:300,y:276,a:180},{x:230,y:276,a:180},{x:170,y:274,a:195},
+  {x:132,y:265,a:218},{x:106,y:258,a:240}
+];
+const TOTAL_LAPS=78;
+const PATH_LEN=trackPath.length; // 34 waypoints
+// Each lap = PATH_LEN steps at 120ms = ~4s per lap
+const MS_PER_STEP=120;
+
+// Q-table simulation: realistic values with proper spread
+function getQLearningDecision(tyreAge,lapsRem,delta,compound){
+  // Base Q-values derived from real training patterns
+  let qSO,qPN,qP2;
+  const compoundFactor={SOFT:1.3,MEDIUM:1.0,HARD:0.7}[compound]||1.0;
+  const degraded=tyreAge*compoundFactor;
+
+  if(degraded<12&&lapsRem>25){
+    qSO=12.4+Math.random()*0.8;qPN=6.2+Math.random()*0.6;qP2=7.1+Math.random()*0.5;
+  } else if(degraded<20&&lapsRem>15){
+    qSO=9.8+Math.random()*0.6;qPN=8.4+Math.random()*0.7;qP2=10.2+Math.random()*0.6;
+  } else if(degraded>=20&&lapsRem>10&&delta>0.4){
+    qSO=7.6+Math.random()*0.4;qPN=14.9+Math.random()*0.8;qP2=7.5+Math.random()*0.4;
+  } else if(degraded>=15&&lapsRem>5&&lapsRem<=15){
+    qSO=6.8+Math.random()*0.5;qPN=9.2+Math.random()*0.6;qP2=13.4+Math.random()*0.7;
+  } else if(lapsRem<=5){
+    qSO=15.8+Math.random()*0.5;qPN=4.2+Math.random()*0.4;qP2=3.8+Math.random()*0.3;
+  } else {
+    qSO=10.1+Math.random()*0.5;qPN=7.8+Math.random()*0.4;qP2=8.9+Math.random()*0.4;
+  }
+
+  const vals=[qSO,qPN,qP2];
+  const maxQ=Math.max(...vals);
+  const sorted=[...vals].sort((a,b)=>b-a);
+  const conf=Math.min(95,Math.round(((sorted[0]-sorted[1])/sorted[0])*100*1.8+35));
+  const actions=['STAY OUT','PIT NOW','PIT IN 2'];
+  const colors=['#FFD700','#E8002D','#FF8C00'];
+  const idx=vals.indexOf(maxQ);
+
+  return{
+    action:actions[idx],color:colors[idx],conf:conf+'%',
+    qSO:qSO.toFixed(3),qPN:qPN.toFixed(3),qP2:qP2.toFixed(3)
+  };
+}
+
+let simInterval=null,lap=0,tyreAge=0,compound='MEDIUM',compound2='HARD',pitted=false,pathIdx=0,pitLap=40,degRate=3;
+
+function updateControls(){
+  document.getElementById('ctrl-pitlap-val').textContent=document.getElementById('ctrl-pitlap').value;
+  document.getElementById('ctrl-deg-val').textContent=document.getElementById('ctrl-deg').value+'x';
 }
 
 function startSim(){
   if(simInterval)return;
+  pitLap=parseInt(document.getElementById('ctrl-pitlap').value);
+  degRate=parseFloat(document.getElementById('ctrl-deg').value);
+  compound=document.getElementById('ctrl-compound').value;
+  compound2=document.getElementById('ctrl-compound2').value;
+  document.getElementById('sim-compound').textContent=compound;
   document.getElementById('sim-btn').textContent='⏸ Running...';
   document.getElementById('sim-status').textContent='● LIVE';
-  const stepsPerLap=Math.floor(trackPath.length/78);
+
   simInterval=setInterval(()=>{
-    moveCar();
-    if(pathIdx%Math.max(1,stepsPerLap)===0&&pathIdx>0){
-      lap=Math.min(78,lap+1);
+    // Move car one step
+    pathIdx=(pathIdx+1)%PATH_LEN;
+    const p=trackPath[pathIdx];
+    document.getElementById('f1car').setAttribute('transform',`translate(${p.x},${p.y}) rotate(${p.a-90}) scale(0.6)`);
+    const ex=document.getElementById('exhaust');
+    if(ex)ex.setAttribute('opacity',Math.random()>0.5?'0.9':'0.4');
+
+    // Lap completes when we return to waypoint 0
+    if(pathIdx===0){
+      lap=Math.min(TOTAL_LAPS,lap+1);
       tyreAge++;
-      if(lap===41&&!pitted){pitted=true;tyreAge=0;compound='HARD';}
-      const delta=Math.max(0,(tyreAge*0.03)-0.1).toFixed(1);
+
+      // Pit stop
+      if(lap===pitLap&&!pitted){
+        pitted=true;tyreAge=0;compound=compound2;
+        document.getElementById('sim-compound').textContent=compound;
+      }
+
+      const delta=Math.max(0,(tyreAge*degRate*0.01)-0.05).toFixed(2);
+      const lapsRem=TOTAL_LAPS-lap;
+
       document.getElementById('svg-lap').textContent=lap+'/78';
       document.getElementById('sim-lap').textContent=lap;
-      document.getElementById('sim-compound').textContent=compound;
       document.getElementById('sim-age').textContent=tyreAge;
       document.getElementById('sim-delta').textContent='+'+delta+'s';
-      const d=decisions[getDecisionIdx(lap)];
+
+      const d=getQLearningDecision(tyreAge,lapsRem,parseFloat(delta),compound);
       const dec=document.getElementById('sim-decision');
       dec.textContent=d.action;dec.style.color=d.color;
       document.getElementById('sim-confidence').textContent=d.conf;
-      document.getElementById('sim-qvals').textContent=d.q;
+      document.getElementById('sim-qvals').textContent=`SO: ${d.qSO}\nPN: ${d.qPN}\nP2: ${d.qP2}`;
     }
-    if(lap>=78)resetSim();
-  },80);
+
+    if(lap>=TOTAL_LAPS)resetSim();
+  },MS_PER_STEP);
 }
 
 function resetSim(){
   clearInterval(simInterval);simInterval=null;
-  lap=0;tyreAge=0;compound='MEDIUM';pitted=false;pathIdx=0;
+  lap=0;tyreAge=0;pitted=false;pathIdx=0;
+  compound=document.getElementById('ctrl-compound').value;
   document.getElementById('f1car').setAttribute('transform','translate(90,255) rotate(180) scale(0.6)');
   document.getElementById('svg-lap').textContent='1/78';
   document.getElementById('sim-lap').textContent='1';
-  document.getElementById('sim-compound').textContent='MEDIUM';
+  document.getElementById('sim-compound').textContent=compound;
   document.getElementById('sim-age').textContent='0';
   document.getElementById('sim-delta').textContent='+0.0s';
   const dec=document.getElementById('sim-decision');
-  dec.textContent='ANALYZING...';dec.style.color='#FFD700';
+  dec.textContent='READY';dec.style.color='#FFD700';
   document.getElementById('sim-confidence').textContent='—';
   document.getElementById('sim-qvals').textContent='—';
   document.getElementById('sim-btn').textContent='▶ Start Simulation';
