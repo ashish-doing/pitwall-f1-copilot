@@ -6,801 +6,112 @@
 <title>PitWall — F1 Race Strategy Copilot</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --red: #E8002D;
-    --red-dim: #9B001E;
-    --gold: #FFD700;
-    --carbon: #0A0A0A;
-    --surface: #111111;
-    --surface2: #1A1A1A;
-    --surface3: #222222;
-    --border: rgba(255,255,255,0.08);
-    --text: #F0F0F0;
-    --muted: #888888;
-    --white: #FFFFFF;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--carbon);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    overflow-x: hidden;
-  }
-
-  /* TRACK ANIMATION */
-  .track-bg {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-
-  .track-line {
-    position: absolute;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(232,0,45,0.15), transparent);
-    animation: trackScan 8s linear infinite;
-  }
-
-  .track-line:nth-child(1) { top: 20%; animation-delay: 0s; width: 100%; }
-  .track-line:nth-child(2) { top: 45%; animation-delay: 2.5s; width: 80%; left: 10%; }
-  .track-line:nth-child(3) { top: 70%; animation-delay: 5s; width: 60%; left: 20%; }
-
-  @keyframes trackScan {
-    0% { opacity: 0; transform: scaleX(0) translateX(-100%); }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; transform: scaleX(1) translateX(0); }
-  }
-
-  .car-dot {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: var(--red);
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--red), 0 0 20px rgba(232,0,45,0.3);
-    animation: carMove 12s linear infinite;
-  }
-
-  .car-dot:nth-child(4) { top: 20%; animation-delay: 0s; }
-  .car-dot:nth-child(5) { top: 45%; animation-delay: 4s; }
-  .car-dot:nth-child(6) { top: 70%; animation-delay: 8s; }
-
-  @keyframes carMove {
-    0% { left: -10px; opacity: 0; }
-    5% { opacity: 1; }
-    95% { opacity: 1; }
-    100% { left: calc(100% + 10px); opacity: 0; }
-  }
-
-  /* NAV */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: rgba(10,10,10,0.9);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .nav-logo {
-    font-family: 'Orbitron', monospace;
-    font-weight: 900;
-    font-size: 1.2rem;
-    color: var(--white);
-    letter-spacing: 0.1em;
-    text-decoration: none;
-  }
-
-  .nav-logo span { color: var(--red); }
-
-  .nav-links {
-    display: flex;
-    gap: 2rem;
-    list-style: none;
-  }
-
-  .nav-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    transition: color 0.2s;
-    text-transform: uppercase;
-  }
-
-  .nav-links a:hover { color: var(--white); }
-
-  .nav-cta {
-    background: var(--red);
-    color: var(--white) !important;
-    padding: 0.5rem 1.25rem;
-    border-radius: 2px;
-    font-weight: 600 !important;
-  }
-
-  .nav-cta:hover { background: #ff0033 !important; color: var(--white) !important; }
-
-  /* HERO */
-  .hero {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 8rem 2rem 4rem;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(232,0,45,0.1);
-    border: 1px solid rgba(232,0,45,0.3);
-    color: var(--red);
-    padding: 0.4rem 1rem;
-    border-radius: 2px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 2rem;
-    animation: fadeInDown 0.8s ease;
-  }
-
-  .hero-badge::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: var(--red);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
-  }
-
-  .hero h1 {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(3rem, 8vw, 7rem);
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    color: var(--white);
-    margin-bottom: 0.25rem;
-    animation: fadeInUp 0.8s ease 0.2s both;
-  }
-
-  .hero h1 .accent { color: var(--red); }
-
-  .hero-sub {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(0.9rem, 2vw, 1.2rem);
-    color: var(--muted);
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    margin-bottom: 2rem;
-    animation: fadeInUp 0.8s ease 0.3s both;
-  }
-
-  .hero-desc {
-    max-width: 600px;
-    font-size: 1.1rem;
-    color: rgba(240,240,240,0.7);
-    line-height: 1.7;
-    margin-bottom: 3rem;
-    animation: fadeInUp 0.8s ease 0.4s both;
-  }
-
-  .hero-btns {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    animation: fadeInUp 0.8s ease 0.5s both;
-  }
-
-  .btn-primary {
-    background: var(--red);
-    color: var(--white);
-    padding: 0.875rem 2rem;
-    border-radius: 2px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    transition: all 0.2s;
-    border: none;
-    cursor: pointer;
-  }
-
-  .btn-primary:hover {
-    background: #ff0033;
-    transform: translateY(-1px);
-  }
-
-  .btn-secondary {
-    background: transparent;
-    color: var(--white);
-    padding: 0.875rem 2rem;
-    border-radius: 2px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    transition: all 0.2s;
-    border: 1px solid rgba(255,255,255,0.2);
-  }
-
-  .btn-secondary:hover {
-    border-color: var(--white);
-    transform: translateY(-1px);
-  }
-
-  /* STATS BAR */
-  .stats-bar {
-    position: relative;
-    z-index: 1;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 2rem;
-    display: flex;
-    justify-content: center;
-    gap: 0;
-  }
-
-  .stat-item {
-    flex: 1;
-    max-width: 200px;
-    text-align: center;
-    padding: 0 2rem;
-    border-right: 1px solid var(--border);
-  }
-
-  .stat-item:last-child { border-right: none; }
-
-  .stat-num {
-    font-family: 'Orbitron', monospace;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--red);
-    display: block;
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-top: 0.25rem;
-  }
-
-  /* SECTIONS */
-  section {
-    position: relative;
-    z-index: 1;
-    padding: 6rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .section-label {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.7rem;
-    color: var(--red);
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .section-label::before {
-    content: '';
-    width: 24px;
-    height: 1px;
-    background: var(--red);
-  }
-
-  .section-title {
-    font-family: 'Orbitron', monospace;
-    font-size: clamp(1.8rem, 4vw, 3rem);
-    font-weight: 700;
-    color: var(--white);
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
-  }
-
-  .section-title span { color: var(--red); }
-
-  /* HOW IT WORKS */
-  .pipeline {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 0;
-    margin-top: 3rem;
-    position: relative;
-  }
-
-  .pipeline-step {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 2rem 1.5rem;
-    position: relative;
-    transition: border-color 0.3s;
-  }
-
-  .pipeline-step:hover { border-color: rgba(232,0,45,0.4); }
-
-  .pipeline-step::after {
-    content: '→';
-    position: absolute;
-    right: -12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--red);
-    font-size: 1rem;
-    z-index: 2;
-    background: var(--carbon);
-    padding: 2px;
-  }
-
-  .pipeline-step:last-child::after { display: none; }
-
-  .step-num {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.65rem;
-    color: var(--red);
-    letter-spacing: 0.2em;
-    margin-bottom: 0.75rem;
-  }
-
-  .step-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .step-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 0.5rem;
-  }
-
-  .step-desc {
-    font-size: 0.8rem;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-
-  /* TABS */
-  .tabs-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    margin-top: 3rem;
-    overflow: hidden;
-  }
-
-  .tab-nav {
-    display: flex;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface2);
-  }
-
-  .tab-btn {
-    flex: 1;
-    padding: 1rem 1.5rem;
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    border-bottom: 2px solid transparent;
-    text-align: center;
-  }
-
-  .tab-btn.active {
-    color: var(--white);
-    border-bottom-color: var(--red);
-    background: var(--surface);
-  }
-
-  .tab-btn:hover:not(.active) { color: var(--white); }
-
-  .tab-content { display: none; padding: 2rem; }
-  .tab-content.active { display: block; }
-
-  .tab-inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    align-items: start;
-  }
-
-  .tab-info h3 {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.1rem;
-    color: var(--white);
-    margin-bottom: 0.75rem;
-  }
-
-  .tab-info p {
-    color: rgba(240,240,240,0.7);
-    font-size: 0.9rem;
-    line-height: 1.7;
-    margin-bottom: 1rem;
-  }
-
-  .feature-list {
-    list-style: none;
-  }
-
-  .feature-list li {
-    font-size: 0.85rem;
-    color: var(--muted);
-    padding: 0.35rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .feature-list li::before {
-    content: '▸';
-    color: var(--red);
-    font-size: 0.7rem;
-  }
-
-  .tab-mock {
-    background: var(--surface3);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 1.5rem;
-  }
-
-  .mock-label {
-    font-size: 0.7rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 1rem;
-  }
-
-  .mock-output {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 1rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-    color: rgba(240,240,240,0.8);
-    line-height: 1.6;
-    min-height: 120px;
-  }
-
-  .mock-output .highlight { color: var(--red); }
-  .mock-output .key { color: var(--gold); }
-  .mock-output .val { color: #7EC8E3; }
-
-  /* IBM TECH */
-  .ibm-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-top: 3rem;
-  }
-
-  .ibm-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 2rem;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s;
-  }
-
-  .ibm-card:hover { border-color: rgba(232,0,45,0.4); }
-
-  .ibm-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--red);
-  }
-
-  .ibm-logo {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.65rem;
-    color: var(--red);
-    letter-spacing: 0.2em;
-    margin-bottom: 0.5rem;
-  }
-
-  .ibm-card h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--white);
-    margin-bottom: 0.75rem;
-  }
-
-  .ibm-card p {
-    font-size: 0.85rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  /* DEMO SECTION */
-  .demo-section {
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 6rem 2rem;
-  }
-
-  .demo-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .demo-frame-wrapper {
-    margin-top: 3rem;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .demo-frame-bar {
-    background: var(--surface3);
-    padding: 0.75rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .dot { width: 10px; height: 10px; border-radius: 50%; }
-  .dot-red { background: #FF5F57; }
-  .dot-yellow { background: #FFBD2E; }
-  .dot-green { background: #28CA41; }
-
-  .demo-url {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--muted);
-    margin-left: 0.5rem;
-  }
-
-  .demo-frame-wrapper iframe {
-    width: 100%;
-    height: 700px;
-    border: none;
-    display: block;
-  }
-
-  /* RACE SIM */
-  .race-sim {
-    margin-top: 3rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 2rem;
-  }
-
-  .sim-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-  }
-
-  .sim-title {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.9rem;
-    color: var(--white);
-  }
-
-  .sim-badge {
-    background: rgba(232,0,45,0.15);
-    border: 1px solid rgba(232,0,45,0.3);
-    color: var(--red);
-    padding: 0.25rem 0.75rem;
-    font-size: 0.7rem;
-    font-family: 'Orbitron', monospace;
-    letter-spacing: 0.1em;
-  }
-
-  .track-viz {
-    width: 100%;
-    height: 60px;
-    position: relative;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    margin-bottom: 1.5rem;
-    overflow: hidden;
-  }
-
-  .track-progress {
-    height: 100%;
-    background: linear-gradient(90deg, rgba(232,0,45,0.2), rgba(232,0,45,0.4));
-    transition: width 1s ease;
-  }
-
-  .sim-car {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 32px;
-    height: 12px;
-    background: var(--red);
-    border-radius: 2px;
-    transition: left 1s ease;
-    box-shadow: 0 0 10px var(--red);
-  }
-
-  .sim-car::after {
-    content: '';
-    position: absolute;
-    right: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 8px;
-    height: 2px;
-    background: linear-gradient(90deg, var(--red), transparent);
-  }
-
-  .sim-lap-info {
-    font-family: 'JetBrains Mono', monospace;
-    position: absolute;
-    top: 50%;
-    right: 1rem;
-    transform: translateY(-50%);
-    font-size: 0.75rem;
-    color: var(--muted);
-  }
-
-  .sim-data {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .sim-stat {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    padding: 0.75rem 1rem;
-    text-align: center;
-  }
-
-  .sim-stat-val {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--white);
-    display: block;
-  }
-
-  .sim-stat-label {
-    font-size: 0.65rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-top: 0.25rem;
-  }
-
-  .sim-decision {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    padding: 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .decision-label {
-    font-size: 0.75rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  .decision-val {
-    font-family: 'Orbitron', monospace;
-    font-size: 1rem;
-    font-weight: 700;
-    transition: color 0.5s;
-  }
-
-  .decision-confidence {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
-
-  /* FOOTER */
-  footer {
-    position: relative;
-    z-index: 1;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    padding: 3rem 2rem;
-    text-align: center;
-  }
-
-  .footer-logo {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.5rem;
-    font-weight: 900;
-    color: var(--white);
-    margin-bottom: 0.5rem;
-  }
-
-  .footer-logo span { color: var(--red); }
-
-  .footer-sub {
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-bottom: 2rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .footer-links {
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-    list-style: none;
-    margin-bottom: 2rem;
-  }
-
-  .footer-links a {
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: color 0.2s;
-  }
-
-  .footer-links a:hover { color: var(--white); }
-
-  .footer-copy {
-    font-size: 0.75rem;
-    color: rgba(136,136,136,0.5);
-  }
-
-  @keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+:root{--red:#E8002D;--gold:#FFD700;--carbon:#0A0A0A;--surface:#111111;--surface2:#1A1A1A;--surface3:#222222;--border:rgba(255,255,255,0.08);--text:#F0F0F0;--muted:#888888;--white:#FFFFFF}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--carbon);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden}
+.track-bg{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;overflow:hidden}
+.track-line{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(232,0,45,0.15),transparent);animation:trackScan 8s linear infinite}
+.track-line:nth-child(1){top:20%;animation-delay:0s;width:100%}
+.track-line:nth-child(2){top:45%;animation-delay:2.5s;width:80%;left:10%}
+.track-line:nth-child(3){top:70%;animation-delay:5s;width:60%;left:20%}
+@keyframes trackScan{0%{opacity:0;transform:scaleX(0) translateX(-100%)}20%{opacity:1}80%{opacity:1}100%{opacity:0;transform:scaleX(1) translateX(0)}}
+.car-dot{position:absolute;width:4px;height:4px;background:var(--red);border-radius:50%;box-shadow:0 0 8px var(--red);animation:carMove 12s linear infinite}
+.car-dot:nth-child(4){top:20%;animation-delay:0s}
+.car-dot:nth-child(5){top:45%;animation-delay:4s}
+.car-dot:nth-child(6){top:70%;animation-delay:8s}
+@keyframes carMove{0%{left:-10px;opacity:0}5%{opacity:1}95%{opacity:1}100%{left:calc(100% + 10px);opacity:0}}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Orbitron',monospace;font-weight:900;font-size:1.2rem;color:var(--white);letter-spacing:0.1em;text-decoration:none}
+.nav-logo span{color:var(--red)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.875rem;font-weight:500;letter-spacing:0.05em;transition:color 0.2s;text-transform:uppercase}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{background:var(--red);color:var(--white)!important;padding:0.5rem 1.25rem;border-radius:2px;font-weight:600!important}
+.nav-cta:hover{background:#ff0033!important}
+.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 4rem}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(232,0,45,0.1);border:1px solid rgba(232,0,45,0.3);color:var(--red);padding:0.4rem 1rem;border-radius:2px;font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2rem;animation:fadeInDown 0.8s ease}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--red);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.hero h1{font-family:'Orbitron',monospace;font-size:clamp(3rem,8vw,7rem);font-weight:900;line-height:1;letter-spacing:-0.02em;color:var(--white);margin-bottom:0.25rem;animation:fadeInUp 0.8s ease 0.2s both}
+.hero h1 .accent{color:var(--red)}
+.hero-sub{font-family:'Orbitron',monospace;font-size:clamp(0.9rem,2vw,1.2rem);color:var(--muted);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:2rem;animation:fadeInUp 0.8s ease 0.3s both}
+.hero-desc{max-width:600px;font-size:1.1rem;color:rgba(240,240,240,0.7);line-height:1.7;margin-bottom:3rem;animation:fadeInUp 0.8s ease 0.4s both}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeInUp 0.8s ease 0.5s both}
+.btn-primary{background:var(--red);color:var(--white);padding:0.875rem 2rem;border-radius:2px;text-decoration:none;font-weight:600;font-size:0.9rem;letter-spacing:0.05em;text-transform:uppercase;transition:all 0.2s;border:none;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-primary:hover{background:#ff0033;transform:translateY(-1px)}
+.btn-secondary{background:transparent;color:var(--white);padding:0.875rem 2rem;border-radius:2px;text-decoration:none;font-weight:600;font-size:0.9rem;letter-spacing:0.05em;text-transform:uppercase;transition:all 0.2s;border:1px solid rgba(255,255,255,0.2);cursor:pointer;font-family:'Inter',sans-serif}
+.btn-secondary:hover{border-color:var(--white);transform:translateY(-1px)}
+.stats-bar{position:relative;z-index:1;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem;display:flex;justify-content:center}
+.stat-item{flex:1;max-width:200px;text-align:center;padding:0 2rem;border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:'Orbitron',monospace;font-size:2rem;font-weight:700;color:var(--red);display:block}
+.stat-label{font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.25rem}
+section{position:relative;z-index:1;padding:6rem 2rem;max-width:1200px;margin:0 auto}
+.section-label{font-family:'Orbitron',monospace;font-size:0.7rem;color:var(--red);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:0.75rem}
+.section-label::before{content:'';width:24px;height:1px;background:var(--red)}
+.section-title{font-family:'Orbitron',monospace;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;color:var(--white);line-height:1.1;margin-bottom:1.5rem}
+.section-title span{color:var(--red)}
+.pipeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;margin-top:3rem}
+.pipeline-step{background:var(--surface);border:1px solid var(--border);padding:2rem 1.5rem;position:relative;transition:border-color 0.3s}
+.pipeline-step:hover{border-color:rgba(232,0,45,0.4)}
+.pipeline-step::after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--red);font-size:1rem;z-index:2;background:var(--carbon);padding:2px}
+.pipeline-step:last-child::after{display:none}
+.step-num{font-family:'Orbitron',monospace;font-size:0.65rem;color:var(--red);letter-spacing:0.2em;margin-bottom:0.75rem}
+.step-icon{font-size:1.5rem;margin-bottom:0.75rem}
+.step-title{font-size:0.9rem;font-weight:600;color:var(--white);margin-bottom:0.5rem}
+.step-desc{font-size:0.8rem;color:var(--muted);line-height:1.5}
+.tabs-section{background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-top:3rem;overflow:hidden}
+.tab-nav{display:flex;border-bottom:1px solid var(--border);background:var(--surface2)}
+.tab-btn{flex:1;padding:1rem 1.5rem;background:none;border:none;color:var(--muted);font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.2s;border-bottom:2px solid transparent;text-align:center}
+.tab-btn.active{color:var(--white);border-bottom-color:var(--red);background:var(--surface)}
+.tab-btn:hover:not(.active){color:var(--white)}
+.tab-content{display:none;padding:2rem}
+.tab-content.active{display:block}
+.tab-inner{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
+.tab-info h3{font-family:'Orbitron',monospace;font-size:1.1rem;color:var(--white);margin-bottom:0.75rem}
+.tab-info p{color:rgba(240,240,240,0.7);font-size:0.9rem;line-height:1.7;margin-bottom:1rem}
+.feature-list{list-style:none}
+.feature-list li{font-size:0.85rem;color:var(--muted);padding:0.35rem 0;display:flex;align-items:center;gap:0.5rem}
+.feature-list li::before{content:'▸';color:var(--red);font-size:0.7rem}
+.tab-mock{background:var(--surface3);border:1px solid var(--border);border-radius:4px;padding:1.5rem}
+.mock-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem}
+.mock-output{background:var(--surface2);border:1px solid var(--border);border-radius:2px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:rgba(240,240,240,0.8);line-height:1.6;min-height:120px;white-space:pre}
+.mock-output .hl{color:var(--red)}
+.mock-output .key{color:var(--gold)}
+.mock-output .val{color:#7EC8E3}
+.ibm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:3rem}
+.ibm-card{background:var(--surface);border:1px solid var(--border);padding:2rem;position:relative;overflow:hidden;transition:border-color 0.3s}
+.ibm-card:hover{border-color:rgba(232,0,45,0.4)}
+.ibm-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red)}
+.ibm-logo{font-family:'Orbitron',monospace;font-size:0.65rem;color:var(--red);letter-spacing:0.2em;margin-bottom:0.5rem}
+.ibm-card h3{font-size:1.1rem;font-weight:600;color:var(--white);margin-bottom:0.75rem}
+.ibm-card p{font-size:0.85rem;color:var(--muted);line-height:1.6}
+.demo-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6rem 2rem;position:relative;z-index:1}
+.demo-inner{max-width:1200px;margin:0 auto}
+.demo-frame-wrapper{margin-top:3rem;background:var(--surface2);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.demo-frame-bar{background:var(--surface3);padding:0.75rem 1rem;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid var(--border)}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot-red{background:#FF5F57}
+.dot-yellow{background:#FFBD2E}
+.dot-green{background:#28CA41}
+.demo-url{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--muted);margin-left:0.5rem}
+.demo-frame-wrapper iframe{width:100%;height:700px;border:none;display:block}
+.race-sim{margin-top:3rem;background:var(--surface);border:1px solid var(--border);padding:2rem}
+.sim-badge{background:rgba(232,0,45,0.15);border:1px solid rgba(232,0,45,0.3);color:var(--red);padding:0.25rem 0.75rem;font-size:0.7rem;font-family:'Orbitron',monospace;letter-spacing:0.1em}
+.sim-stat{background:var(--surface2);border:1px solid var(--border);padding:0.75rem 1rem;text-align:center}
+.sim-stat-val{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:700;color:var(--white);display:block}
+.sim-stat-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.25rem}
+footer{position:relative;z-index:1;background:var(--surface);border-top:1px solid var(--border);padding:3rem 2rem;text-align:center}
+.footer-logo{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--white);margin-bottom:0.5rem}
+.footer-logo span{color:var(--red)}
+.footer-sub{font-size:0.8rem;color:var(--muted);margin-bottom:2rem;letter-spacing:0.1em;text-transform:uppercase}
+.footer-links{display:flex;gap:2rem;justify-content:center;list-style:none;margin-bottom:2rem}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:0.85rem;transition:color 0.2s}
+.footer-links a:hover{color:var(--white)}
+.footer-copy{font-size:0.75rem;color:rgba(136,136,136,0.5)}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
@@ -830,10 +141,7 @@
   <div class="hero-badge">IBM SkillsBuild AI Builders Challenge — May 2026</div>
   <h1>PIT<span class="accent">WALL</span></h1>
   <div class="hero-sub">F1 Race Strategy Copilot</div>
-  <p class="hero-desc">
-    AI-powered pit stop strategy using real F1 telemetry, IBM Granite reasoning, 
-    Docling regulation parsing, and a Q-Learning agent trained on 23,400 real race decisions.
-  </p>
+  <p class="hero-desc">AI-powered pit stop strategy using real F1 telemetry, IBM Granite reasoning, Docling regulation parsing, and a Q-Learning agent trained on 23,400 real race decisions.</p>
   <div class="hero-btns">
     <a href="#demo" class="btn-primary">🚀 Live Demo</a>
     <a href="#sim" class="btn-secondary">🏎️ Race Simulation</a>
@@ -842,71 +150,30 @@
 </div>
 
 <div class="stats-bar">
-  <div class="stat-item">
-    <span class="stat-num">23,400</span>
-    <div class="stat-label">RL Training Decisions</div>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num">5</span>
-    <div class="stat-label">Real F1 Races</div>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num">3</span>
-    <div class="stat-label">AI Systems</div>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num">2022–24</span>
-    <div class="stat-label">Seasons Covered</div>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num">IBM</span>
-    <div class="stat-label">Granite + Docling</div>
-  </div>
+  <div class="stat-item"><span class="stat-num">23,400</span><div class="stat-label">RL Training Decisions</div></div>
+  <div class="stat-item"><span class="stat-num">5</span><div class="stat-label">Real F1 Races</div></div>
+  <div class="stat-item"><span class="stat-num">3</span><div class="stat-label">AI Systems</div></div>
+  <div class="stat-item"><span class="stat-num">2022–24</span><div class="stat-label">Seasons Covered</div></div>
+  <div class="stat-item"><span class="stat-num">IBM</span><div class="stat-label">Granite + Docling</div></div>
 </div>
 
-<!-- HOW IT WORKS -->
 <section id="how">
   <div class="section-label">System Architecture</div>
   <h2 class="section-title">How <span>PitWall</span> Works</h2>
-  <p style="color: rgba(240,240,240,0.6); max-width: 600px; line-height: 1.7;">
-    Three AI systems working in concert — real telemetry data, regulation-aware language reasoning, and reinforcement learning trained on actual race outcomes.
-  </p>
-
+  <p style="color:rgba(240,240,240,0.6);max-width:600px;line-height:1.7">Three AI systems working in concert — real telemetry data, regulation-aware language reasoning, and reinforcement learning trained on actual race outcomes.</p>
   <div class="pipeline">
-    <div class="pipeline-step">
-      <div class="step-num">01 — DATA</div>
-      <div class="step-icon">📡</div>
-      <div class="step-title">FastF1 Telemetry</div>
-      <div class="step-desc">Official F1 timing API. Lap times, tyre compounds, pit stop laps, car speed traces from 2022–2024 seasons.</div>
-    </div>
-    <div class="pipeline-step">
-      <div class="step-num">02 — RULES</div>
-      <div class="step-icon">📋</div>
-      <div class="step-title">Docling + FIA Regs</div>
-      <div class="step-desc">IBM Docling parses FIA Sporting Regulations PDF, extracting compound rules and pit window constraints.</div>
-    </div>
-    <div class="pipeline-step">
-      <div class="step-num">03 — REASON</div>
-      <div class="step-icon">🧠</div>
-      <div class="step-title">IBM Granite 4.1 8B</div>
-      <div class="step-desc">Granite receives telemetry + regulation context, generates explainable strategy analysis and pit recommendations.</div>
-    </div>
-    <div class="pipeline-step">
-      <div class="step-num">04 — LEARN</div>
-      <div class="step-icon">🤖</div>
-      <div class="step-title">Q-Learning Agent</div>
-      <div class="step-desc">RL agent trained on 23,400 real decisions. Outputs Stay Out / Pit Now / Pit in 2 with Q-values and confidence.</div>
-    </div>
+    <div class="pipeline-step"><div class="step-num">01 — DATA</div><div class="step-icon">📡</div><div class="step-title">FastF1 Telemetry</div><div class="step-desc">Official F1 timing API. Lap times, tyre compounds, pit stop laps, car speed traces from 2022–2024 seasons.</div></div>
+    <div class="pipeline-step"><div class="step-num">02 — RULES</div><div class="step-icon">📋</div><div class="step-title">Docling + FIA Regs</div><div class="step-desc">IBM Docling parses FIA Sporting Regulations PDF, extracting compound rules and pit window constraints.</div></div>
+    <div class="pipeline-step"><div class="step-num">03 — REASON</div><div class="step-icon">🧠</div><div class="step-title">IBM Granite 4.1 8B</div><div class="step-desc">Granite receives telemetry + regulation context, generates explainable strategy analysis and pit recommendations.</div></div>
+    <div class="pipeline-step"><div class="step-num">04 — LEARN</div><div class="step-icon">🤖</div><div class="step-title">Q-Learning Agent</div><div class="step-desc">RL agent trained on 23,400 real decisions. Outputs Stay Out / Pit Now / Pit in 2 with Q-values and confidence.</div></div>
   </div>
 
-  <!-- TABS -->
   <div class="tabs-section">
     <div class="tab-nav">
       <button class="tab-btn active" onclick="switchTab(0)">📊 Race Strategy Analysis</button>
       <button class="tab-btn" onclick="switchTab(1)">⏱️ Live Pit Window Advisor</button>
       <button class="tab-btn" onclick="switchTab(2)">🤖 RL Pit Optimizer</button>
     </div>
-
     <div class="tab-content active">
       <div class="tab-inner">
         <div class="tab-info">
@@ -922,25 +189,21 @@
         </div>
         <div class="tab-mock">
           <div class="mock-label">Sample Granite Output — Monaco 2024, LEC</div>
-          <div class="mock-output">
-<span class="highlight">Driver:</span> LEC | <span class="highlight">Race:</span> Monaco GP 2024
-<span class="highlight">Laps:</span> 78 | <span class="highlight">Best:</span> 75.162s
-<span class="highlight">Compounds:</span> MEDIUM → HARD
-<span class="highlight">Pit Stop Lap:</span> [1.0]
+          <div class="mock-output"><span class="hl">Driver:</span> LEC | <span class="hl">Race:</span> Monaco GP 2024
+<span class="hl">Laps:</span> 78 | <span class="hl">Best:</span> 75.162s
+<span class="hl">Compounds:</span> MEDIUM → HARD
 
 <span class="key">━━ Strategy Assessment ━━</span>
-The Safety Car pit on lap 1 was
-textbook — free stop with zero
+Safety Car pit on lap 1 was
+textbook — free stop, zero
 track position loss.
 
 <span class="key">━━ Regulation Check ━━</span>
-Two-compound rule satisfied ✓
-Pit window timing: optimal ✓
-          </div>
+Two-compound rule: satisfied ✓
+Pit window timing: optimal ✓</div>
         </div>
       </div>
     </div>
-
     <div class="tab-content">
       <div class="tab-inner">
         <div class="tab-info">
@@ -956,22 +219,18 @@ Pit window timing: optimal ✓
         </div>
         <div class="tab-mock">
           <div class="mock-label">Sample Output — Lap 25, MEDIUM, +0.5s</div>
-          <div class="mock-output">
-<span class="key">Input State:</span>
+          <div class="mock-output"><span class="key">Input State:</span>
   Lap: <span class="val">25</span> | Compound: <span class="val">MEDIUM</span>
   Tyre Age: <span class="val">20 laps</span> | Δ: <span class="val">+0.5s</span>
 
 <span class="key">Granite Recommendation:</span>
-  <span class="highlight">STAY OUT</span> — tyre delta of +0.5s
-  is within acceptable degradation
-  window. With 20 laps remaining,
-  pitting now risks undercut
-  exposure. Monitor next 3 laps.
-          </div>
+  <span class="hl">STAY OUT</span> — delta of +0.5s is
+  within acceptable window. With
+  20 laps remaining, pitting now
+  risks undercut exposure.</div>
         </div>
       </div>
     </div>
-
     <div class="tab-content">
       <div class="tab-inner">
         <div class="tab-info">
@@ -987,61 +246,40 @@ Pit window timing: optimal ✓
         </div>
         <div class="tab-mock">
           <div class="mock-label">Sample RL Output — MEDIUM, 25 laps old</div>
-          <div class="mock-output">
-<span class="key">State:</span>
+          <div class="mock-output"><span class="key">State:</span>
   Compound: <span class="val">MEDIUM</span> | Age: <span class="val">25</span>
   Laps Remaining: <span class="val">30</span> | Δ: <span class="val">+0.8s</span>
 
 <span class="key">Q-Values:</span>
   Stay Out  → <span class="val">7.600</span>
-  Pit Now   → <span class="highlight">14.978</span> ◀ MAX
+  Pit Now   → <span class="hl">14.978</span> ◀ MAX
   Pit in 2  → <span class="val">7.506</span>
 
-<span class="key">Decision:</span> <span class="highlight">PIT NOW</span>
-<span class="key">Confidence:</span> <span class="val">65.2%</span>
-          </div>
+<span class="key">Decision:</span> <span class="hl">PIT NOW</span> | Conf: <span class="val">65.2%</span></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- IBM TECH -->
-<section id="ibm" style="background: var(--surface); border-top: 1px solid var(--border); max-width: 100%; padding: 6rem 2rem;">
-  <div style="max-width: 1200px; margin: 0 auto;">
+<section id="ibm" style="background:var(--surface);border-top:1px solid var(--border);max-width:100%;padding:6rem 2rem">
+  <div style="max-width:1200px;margin:0 auto">
     <div class="section-label">IBM Technologies</div>
     <h2 class="section-title">Built with <span>IBM</span> AI</h2>
-    <p style="color: rgba(240,240,240,0.6); max-width: 600px; line-height: 1.7;">
-      PitWall uses two core IBM technologies as required by the challenge — Granite for reasoning and Docling for document intelligence.
-    </p>
+    <p style="color:rgba(240,240,240,0.6);max-width:600px;line-height:1.7">PitWall uses two core IBM technologies as required by the challenge — Granite for reasoning and Docling for document intelligence.</p>
     <div class="ibm-grid">
-      <div class="ibm-card">
-        <div class="ibm-logo">IBM TECHNOLOGY</div>
-        <h3>Granite 4.1 8B</h3>
-        <p>IBM's flagship open-source language model. Used as the core reasoning engine for strategy analysis and pit window recommendations. Receives telemetry + regulation context, outputs explainable strategic analysis.</p>
-      </div>
-      <div class="ibm-card">
-        <div class="ibm-logo">IBM TECHNOLOGY</div>
-        <h3>Docling</h3>
-        <p>IBM's document intelligence library. Parses the FIA Sporting Regulations PDF, extracts tyre compound rules and pit stop regulations, and injects this context into every Granite prompt — making recommendations regulation-aware.</p>
-      </div>
-      <div class="ibm-card">
-        <div class="ibm-logo">OPEN SOURCE</div>
-        <h3>FastF1 + RL Agent</h3>
-        <p>Official F1 telemetry API for real race data (2022–2024). Combined with a custom Q-Learning agent trained on 23,400 real lap decisions from 5 F1 races — grounding every recommendation in actual race outcomes.</p>
-      </div>
+      <div class="ibm-card"><div class="ibm-logo">IBM TECHNOLOGY</div><h3>Granite 4.1 8B</h3><p>IBM's flagship open-source language model. Core reasoning engine for strategy analysis and pit window recommendations. Receives telemetry + regulation context, outputs explainable strategic analysis.</p></div>
+      <div class="ibm-card"><div class="ibm-logo">IBM TECHNOLOGY</div><h3>Docling</h3><p>IBM's document intelligence library. Parses the FIA Sporting Regulations PDF, extracts tyre compound rules and pit stop regulations, injects this context into every Granite prompt — regulation-aware AI.</p></div>
+      <div class="ibm-card"><div class="ibm-logo">OPEN SOURCE</div><h3>FastF1 + RL Agent</h3><p>Official F1 telemetry API for real race data (2022–2024). Combined with a custom Q-Learning agent trained on 23,400 real lap decisions from 5 F1 races — every recommendation grounded in actual outcomes.</p></div>
     </div>
   </div>
 </section>
 
-<!-- DEMO -->
 <div class="demo-section" id="demo">
   <div class="demo-inner">
     <div class="section-label">Live Application</div>
     <h2 class="section-title">Try <span>PitWall</span> Live</h2>
-    <p style="color: rgba(240,240,240,0.6); max-width: 600px; line-height: 1.7;">
-      The full application running live on HuggingFace Spaces. Select Monaco 2024 + LEC and click Analyze Strategy to see IBM Granite in action.
-    </p>
+    <p style="color:rgba(240,240,240,0.6);max-width:600px;line-height:1.7">The full application running live on HuggingFace Spaces. Select Monaco 2024 + LEC and click Analyze Strategy to see IBM Granite in action.</p>
     <div class="demo-frame-wrapper">
       <div class="demo-frame-bar">
         <div class="dot dot-red"></div>
@@ -1049,77 +287,99 @@ Pit window timing: optimal ✓
         <div class="dot dot-green"></div>
         <span class="demo-url">huggingface.co/spaces/ashish-doing/pitwall-f1-copilot</span>
       </div>
-      <iframe
-        src="https://ashish-doing-pitwall-f1-copilot.hf.space"
-        title="PitWall F1 Copilot Live Demo"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
-      ></iframe>
+      <iframe src="https://ashish-doing-pitwall-f1-copilot.hf.space" title="PitWall F1 Copilot Live Demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>
     </div>
   </div>
 </div>
 
-<!-- RACE SIM -->
 <section id="sim">
   <div class="section-label">Interactive Simulation</div>
   <h2 class="section-title">Live <span>Race</span> Simulation</h2>
-  <p style="color: rgba(240,240,240,0.6); max-width: 600px; line-height: 1.7;">
-    Watch the RL agent make real-time pit decisions as a simulated race progresses. Each lap, the Q-learning policy recommends Stay Out, Pit Now, or Pit in 2 — powered by the same model behind Tab 3.
-  </p>
+  <p style="color:rgba(240,240,240,0.6);max-width:600px;line-height:1.7">Watch the RL agent make real pit decisions as a race progresses. Each lap the Q-learning policy recommends Stay Out, Pit Now, or Pit in 2 — same model as Tab 3.</p>
 
   <div class="race-sim">
-    <div class="sim-header">
-      <div class="sim-title">Monaco Grand Prix Simulation — LEC</div>
-      <div id="sim-status" class="sim-badge">● LIVE</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem">
+      <div style="font-family:'Orbitron',monospace;font-size:0.85rem;color:var(--white)">Monaco Grand Prix — LEC</div>
+      <div id="sim-status" class="sim-badge">● READY</div>
     </div>
 
-    <div class="track-viz">
-      <div class="track-progress" id="track-progress" style="width: 0%"></div>
-      <div class="sim-car" id="sim-car" style="left: 0px"></div>
-      <div class="sim-lap-info" id="lap-info">LAP 1 / 78</div>
+    <!-- MONACO CIRCUIT -->
+    <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.08);border-radius:4px;padding:1.25rem;margin-bottom:1.25rem">
+      <div style="font-family:'Orbitron',monospace;font-size:0.6rem;color:#555;letter-spacing:0.2em;margin-bottom:0.75rem">MONACO CIRCUIT — LAP TRACKER</div>
+      <svg id="circuit-svg" viewBox="0 0 700 300" width="100%" style="display:block">
+        <!-- Track layers: outer glow, base, surface, centerline -->
+        <path d="M90,255 L90,175 Q90,75 165,55 L335,45 Q415,40 458,76 Q498,110 518,136 L555,175 Q582,205 582,235 Q582,262 555,275 L205,275 Q148,275 90,255 Z" fill="none" stroke="#2a2a2a" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M90,255 L90,175 Q90,75 165,55 L335,45 Q415,40 458,76 Q498,110 518,136 L555,175 Q582,205 582,235 Q582,262 555,275 L205,275 Q148,275 90,255 Z" fill="none" stroke="#181818" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M90,255 L90,175 Q90,75 165,55 L335,45 Q415,40 458,76 Q498,110 518,136 L555,175 Q582,205 582,235 Q582,262 555,275 L205,275 Q148,275 90,255 Z" fill="none" stroke="#2e2e2e" stroke-width="1" stroke-dasharray="8,14" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Sector markers -->
+        <line x1="90" y1="255" x2="90" y2="243" stroke="#E8002D" stroke-width="3"/>
+        <line x1="335" y1="45" x2="335" y2="57" stroke="#FFD700" stroke-width="3"/>
+        <line x1="555" y1="275" x2="555" y2="263" stroke="#00D2FF" stroke-width="3"/>
+        <!-- Pit lane -->
+        <rect x="132" y="267" width="75" height="5" rx="1" fill="#E8002D" opacity="0.5"/>
+        <text x="170" y="260" text-anchor="middle" fill="#555" font-family="monospace" font-size="8" letter-spacing="1">PIT</text>
+        <!-- Corner labels -->
+        <text x="68" y="198" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">STE</text>
+        <text x="68" y="208" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">DEVOTE</text>
+        <text x="162" y="40" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">BEAU</text>
+        <text x="162" y="50" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">RIVAGE</text>
+        <text x="480" y="108" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">CASINO</text>
+        <text x="596" y="200" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">LOEWS</text>
+        <text x="385" y="292" fill="#444" font-family="monospace" font-size="8" text-anchor="middle">TABAC</text>
+        <!-- Start/Finish -->
+        <line x1="82" y1="253" x2="98" y2="257" stroke="white" stroke-width="2.5"/>
+        <text x="72" y="268" fill="#888" font-family="monospace" font-size="8" text-anchor="middle">S/F</text>
+        <!-- F1 Car — smaller, scale(0.6) -->
+        <g id="f1car" transform="translate(90,255) rotate(180) scale(0.6)">
+          <ellipse cx="0" cy="0" rx="16" ry="6" fill="#E8002D"/>
+          <ellipse cx="2" cy="0" rx="5" ry="3.5" fill="#111"/>
+          <rect x="10" y="-8" width="7" height="2.5" rx="1" fill="#b00020"/>
+          <rect x="-17" y="-8" width="5" height="2.5" rx="1" fill="#b00020"/>
+          <ellipse cx="11" cy="-6" rx="3.5" ry="2.5" fill="#1a1a1a"/>
+          <ellipse cx="11" cy="6" rx="3.5" ry="2.5" fill="#1a1a1a"/>
+          <ellipse cx="-11" cy="-6" rx="3.5" ry="2.5" fill="#1a1a1a"/>
+          <ellipse cx="-11" cy="6" rx="3.5" ry="2.5" fill="#1a1a1a"/>
+          <path d="M-2,-3.5 Q2,-6 5,-3.5" fill="none" stroke="#333" stroke-width="1.5"/>
+          <ellipse id="exhaust" cx="-15" cy="0" rx="2.5" ry="1.5" fill="#ff4400" opacity="0.7"/>
+        </g>
+        <!-- Lap counter -->
+        <rect x="598" y="8" width="94" height="44" rx="3" fill="#0d0d0d" stroke="#2a2a2a" stroke-width="1"/>
+        <text x="645" y="24" text-anchor="middle" fill="#555" font-family="monospace" font-size="8" letter-spacing="1">LAP</text>
+        <text id="svg-lap" x="645" y="44" text-anchor="middle" fill="#E8002D" font-family="monospace" font-size="20" font-weight="bold">1/78</text>
+      </svg>
     </div>
 
-    <div class="sim-data">
-      <div class="sim-stat">
-        <span class="sim-stat-val" id="sim-lap">1</span>
-        <div class="sim-stat-label">Current Lap</div>
-      </div>
-      <div class="sim-stat">
-        <span class="sim-stat-val" id="sim-compound">MEDIUM</span>
-        <div class="sim-stat-label">Compound</div>
-      </div>
-      <div class="sim-stat">
-        <span class="sim-stat-val" id="sim-age">0</span>
-        <div class="sim-stat-label">Tyre Age</div>
-      </div>
-      <div class="sim-stat">
-        <span class="sim-stat-val" id="sim-delta">+0.0s</span>
-        <div class="sim-stat-label">Lap Delta</div>
-      </div>
+    <!-- TELEMETRY -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem">
+      <div class="sim-stat"><span class="sim-stat-val" id="sim-lap">1</span><div class="sim-stat-label">Current Lap</div></div>
+      <div class="sim-stat"><span class="sim-stat-val" id="sim-compound" style="font-size:0.85rem">MEDIUM</span><div class="sim-stat-label">Compound</div></div>
+      <div class="sim-stat"><span class="sim-stat-val" id="sim-age">0</span><div class="sim-stat-label">Tyre Age</div></div>
+      <div class="sim-stat"><span class="sim-stat-val" id="sim-delta">+0.0s</span><div class="sim-stat-label">Lap Delta</div></div>
     </div>
 
-    <div class="sim-decision">
+    <!-- RL DECISION -->
+    <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.08);padding:1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;align-items:center;margin-bottom:1.5rem">
       <div>
-        <div class="decision-label">RL Agent Decision</div>
-        <div class="decision-val" id="sim-decision" style="color: var(--gold)">ANALYZING...</div>
+        <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem">RL Agent Decision</div>
+        <div id="sim-decision" style="font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:700;color:#FFD700;transition:color 0.4s">ANALYZING...</div>
       </div>
-      <div style="text-align: right;">
-        <div class="decision-label">Confidence</div>
-        <div class="decision-confidence" id="sim-confidence">—</div>
+      <div>
+        <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem">Confidence</div>
+        <div id="sim-confidence" style="font-family:'JetBrains Mono',monospace;font-size:1rem;color:#aaa">—</div>
       </div>
-      <div style="text-align: right;">
-        <div class="decision-label">Q-Values</div>
-        <div class="decision-confidence" id="sim-qvals">—</div>
+      <div>
+        <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem">Q-Values</div>
+        <div id="sim-qvals" style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#555;line-height:1.8">—</div>
       </div>
     </div>
-  </div>
 
-  <div style="text-align: center; margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
-    <button class="btn-primary" onclick="startSim()" id="sim-btn">▶ Start Simulation</button>
-    <button class="btn-secondary" onclick="resetSim()">↺ Reset</button>
+    <div style="display:flex;gap:1rem;justify-content:center">
+      <button class="btn-primary" onclick="startSim()" id="sim-btn">▶ Start Simulation</button>
+      <button class="btn-secondary" onclick="resetSim()">↺ Reset</button>
+    </div>
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-logo">PIT<span>WALL</span></div>
   <div class="footer-sub">F1 Race Strategy Copilot</div>
@@ -1130,97 +390,100 @@ Pit window timing: optimal ✓
     <li><a href="https://www.docling.ai" target="_blank">Docling</a></li>
     <li><a href="https://docs.fastf1.dev" target="_blank">FastF1</a></li>
   </ul>
-  <div class="footer-copy">
-    IBM SkillsBuild AI Builders Challenge — May 2026 | Built by Ashish Kumar, IIIT Guwahati
-  </div>
+  <div class="footer-copy">IBM SkillsBuild AI Builders Challenge — May 2026 | Built by Ashish Kumar, IIIT Guwahati</div>
 </footer>
 
 <script>
-function switchTab(idx) {
-  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-  document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('active', i === idx));
+function switchTab(idx){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  document.querySelectorAll('.tab-content').forEach((c,i)=>c.classList.toggle('active',i===idx));
 }
 
-let simInterval = null;
-let lap = 0;
-let tyreAge = 0;
-let compound = 'MEDIUM';
-let pitted = false;
-
-const decisions = [
-  { action: 'STAY OUT', color: '#FFD700', conf: '71.2%', q: 'SO:12.1 PN:8.3 P2:9.1' },
-  { action: 'STAY OUT', color: '#FFD700', conf: '68.5%', q: 'SO:11.8 PN:7.9 P2:8.7' },
-  { action: 'STAY OUT', color: '#FFD700', conf: '59.3%', q: 'SO:10.2 PN:8.8 P2:9.4' },
-  { action: 'PIT IN 2', color: '#FF8C00', conf: '52.1%', q: 'SO:7.8 PN:9.1 P2:12.3' },
-  { action: 'PIT IN 2', color: '#FF8C00', conf: '61.4%', q: 'SO:6.2 PN:11.4 P2:14.1' },
-  { action: 'PIT NOW',  color: '#E8002D', conf: '65.2%', q: 'SO:7.6 PN:14.9 P2:7.5' },
-  { action: 'STAY OUT', color: '#FFD700', conf: '78.3%', q: 'SO:15.2 PN:6.1 P2:5.8' },
-  { action: 'STAY OUT', color: '#FFD700', conf: '82.1%', q: 'SO:16.1 PN:5.9 P2:5.2' },
+const trackPath=[
+  {x:90,y:255,a:270},{x:90,y:215,a:270},{x:90,y:175,a:270},
+  {x:100,y:135,a:290},{x:118,y:98,a:310},{x:142,y:70,a:330},
+  {x:168,y:56,a:350},{x:205,y:48,a:5},{x:255,y:46,a:0},
+  {x:300,y:45,a:0},{x:335,y:45,a:0},{x:375,y:47,a:10},
+  {x:410,y:56,a:25},{x:438,y:74,a:45},{x:458,y:96,a:55},
+  {x:478,y:118,a:60},{x:498,y:138,a:65},{x:522,y:158,a:75},
+  {x:542,y:178,a:80},{x:562,y:203,a:100},{x:574,y:225,a:115},
+  {x:578,y:248,a:135},{x:566,y:267,a:155},{x:543,y:276,a:170},
+  {x:495,y:276,a:180},{x:435,y:276,a:180},{x:365,y:276,a:180},
+  {x:295,y:276,a:180},{x:235,y:276,a:180},{x:175,y:276,a:180},
+  {x:138,y:272,a:200},{x:110,y:263,a:230},{x:94,y:256,a:255}
 ];
 
-function getDecisionIdx(l) {
-  if (l < 10) return 0;
-  if (l < 20) return 1;
-  if (l < 30) return 2;
-  if (l < 35) return 3;
-  if (l < 40) return 4;
-  if (l === 40 && !pitted) return 5;
-  return l < 60 ? 6 : 7;
+const decisions=[
+  {action:'STAY OUT',color:'#FFD700',conf:'71.2%',q:'SO: 12.1 | PN: 8.3 | P2: 9.1'},
+  {action:'STAY OUT',color:'#FFD700',conf:'68.5%',q:'SO: 11.8 | PN: 7.9 | P2: 8.7'},
+  {action:'STAY OUT',color:'#FFD700',conf:'59.3%',q:'SO: 10.2 | PN: 8.8 | P2: 9.4'},
+  {action:'PIT IN 2',color:'#FF8C00',conf:'52.1%',q:'SO:  7.8 | PN: 9.1 | P2: 12.3'},
+  {action:'PIT IN 2',color:'#FF8C00',conf:'61.4%',q:'SO:  6.2 | PN:11.4 | P2: 14.1'},
+  {action:'PIT NOW', color:'#E8002D',conf:'65.2%',q:'SO:  7.6 | PN:14.9 | P2:  7.5'},
+  {action:'STAY OUT',color:'#FFD700',conf:'78.3%',q:'SO: 15.2 | PN: 6.1 | P2:  5.8'},
+  {action:'STAY OUT',color:'#FFD700',conf:'82.1%',q:'SO: 16.1 | PN: 5.9 | P2:  5.2'},
+];
+
+let simInterval=null,lap=0,tyreAge=0,compound='MEDIUM',pitted=false,pathIdx=0;
+
+function getDecisionIdx(l){
+  if(l<10)return 0;if(l<20)return 1;if(l<30)return 2;
+  if(l<35)return 3;if(l<40)return 4;
+  if(l===40&&!pitted)return 5;
+  return l<60?6:7;
 }
 
-function startSim() {
-  if (simInterval) return;
-  document.getElementById('sim-btn').textContent = '⏸ Running...';
-  simInterval = setInterval(() => {
-    lap++;
-    tyreAge++;
+function moveCar(){
+  pathIdx=(pathIdx+1)%trackPath.length;
+  const p=trackPath[pathIdx];
+  document.getElementById('f1car').setAttribute('transform',`translate(${p.x},${p.y}) rotate(${p.a-90}) scale(0.6)`);
+  const ex=document.getElementById('exhaust');
+  if(ex)ex.setAttribute('opacity',Math.random()>0.5?'0.9':'0.4');
+}
 
-    if (lap > 78) { resetSim(); return; }
-
-    if (lap === 41 && !pitted) {
-      pitted = true;
-      tyreAge = 0;
-      compound = 'HARD';
+function startSim(){
+  if(simInterval)return;
+  document.getElementById('sim-btn').textContent='⏸ Running...';
+  document.getElementById('sim-status').textContent='● LIVE';
+  const stepsPerLap=Math.floor(trackPath.length/78);
+  simInterval=setInterval(()=>{
+    moveCar();
+    if(pathIdx%Math.max(1,stepsPerLap)===0&&pathIdx>0){
+      lap=Math.min(78,lap+1);
+      tyreAge++;
+      if(lap===41&&!pitted){pitted=true;tyreAge=0;compound='HARD';}
+      const delta=Math.max(0,(tyreAge*0.03)-0.1).toFixed(1);
+      document.getElementById('svg-lap').textContent=lap+'/78';
+      document.getElementById('sim-lap').textContent=lap;
+      document.getElementById('sim-compound').textContent=compound;
+      document.getElementById('sim-age').textContent=tyreAge;
+      document.getElementById('sim-delta').textContent='+'+delta+'s';
+      const d=decisions[getDecisionIdx(lap)];
+      const dec=document.getElementById('sim-decision');
+      dec.textContent=d.action;dec.style.color=d.color;
+      document.getElementById('sim-confidence').textContent=d.conf;
+      document.getElementById('sim-qvals').textContent=d.q;
     }
-
-    const delta = Math.max(0, (tyreAge * 0.03) - 0.1).toFixed(1);
-    const pct = (lap / 78) * 100;
-    const carLeft = (pct / 100) * (document.querySelector('.track-viz').offsetWidth - 40);
-
-    document.getElementById('track-progress').style.width = pct + '%';
-    document.getElementById('sim-car').style.left = carLeft + 'px';
-    document.getElementById('lap-info').textContent = 'LAP ' + lap + ' / 78';
-    document.getElementById('sim-lap').textContent = lap;
-    document.getElementById('sim-compound').textContent = compound;
-    document.getElementById('sim-age').textContent = tyreAge;
-    document.getElementById('sim-delta').textContent = '+' + delta + 's';
-
-    const d = decisions[getDecisionIdx(lap)];
-    document.getElementById('sim-decision').textContent = d.action;
-    document.getElementById('sim-decision').style.color = d.color;
-    document.getElementById('sim-confidence').textContent = d.conf;
-    document.getElementById('sim-qvals').textContent = d.q;
-  }, 400);
+    if(lap>=78)resetSim();
+  },80);
 }
 
-function resetSim() {
-  clearInterval(simInterval);
-  simInterval = null;
-  lap = 0; tyreAge = 0; compound = 'MEDIUM'; pitted = false;
-  document.getElementById('track-progress').style.width = '0%';
-  document.getElementById('sim-car').style.left = '0px';
-  document.getElementById('lap-info').textContent = 'LAP 1 / 78';
-  document.getElementById('sim-lap').textContent = '1';
-  document.getElementById('sim-compound').textContent = 'MEDIUM';
-  document.getElementById('sim-age').textContent = '0';
-  document.getElementById('sim-delta').textContent = '+0.0s';
-  document.getElementById('sim-decision').textContent = 'ANALYZING...';
-  document.getElementById('sim-decision').style.color = 'var(--gold)';
-  document.getElementById('sim-confidence').textContent = '—';
-  document.getElementById('sim-qvals').textContent = '—';
-  document.getElementById('sim-btn').textContent = '▶ Start Simulation';
+function resetSim(){
+  clearInterval(simInterval);simInterval=null;
+  lap=0;tyreAge=0;compound='MEDIUM';pitted=false;pathIdx=0;
+  document.getElementById('f1car').setAttribute('transform','translate(90,255) rotate(180) scale(0.6)');
+  document.getElementById('svg-lap').textContent='1/78';
+  document.getElementById('sim-lap').textContent='1';
+  document.getElementById('sim-compound').textContent='MEDIUM';
+  document.getElementById('sim-age').textContent='0';
+  document.getElementById('sim-delta').textContent='+0.0s';
+  const dec=document.getElementById('sim-decision');
+  dec.textContent='ANALYZING...';dec.style.color='#FFD700';
+  document.getElementById('sim-confidence').textContent='—';
+  document.getElementById('sim-qvals').textContent='—';
+  document.getElementById('sim-btn').textContent='▶ Start Simulation';
+  document.getElementById('sim-status').textContent='● READY';
 }
 </script>
 </body>
-</html> 
- 
+</html>
