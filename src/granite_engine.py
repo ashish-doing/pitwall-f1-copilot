@@ -1,37 +1,24 @@
-﻿import requests
-import os
-import time
+﻿import os
+from huggingface_hub import InferenceClient
 
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-API_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL_ID = "meta-llama/llama-3.3-70b-instruct:free"
+HF_TOKEN = os.environ.get("HF_TOKEN", "")
+
+client = InferenceClient(
+    provider="hf-inference",
+    api_key=HF_TOKEN,
+)
 
 def query_granite(prompt: str) -> str:
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "model": MODEL_ID,
-        "messages": [{"role": "user", "content": prompt}],
-        "max_tokens": 400,
-        "temperature": 0.7
-    }
-    for attempt in range(3):
-        try:
-            response = requests.post(API_URL, headers=headers, json=payload, timeout=60)
-            if response.status_code == 429:
-                time.sleep(10)
-                continue
-            response.raise_for_status()
-            return response.json()["choices"][0]["message"]["content"]
-        except requests.exceptions.HTTPError as e:
-            if attempt == 2:
-                return f"Error: {e.response.status_code} - {e.response.text[:200]}"
-        except Exception as e:
-            if attempt == 2:
-                return f"Error: {str(e)}"
-    return "Service temporarily unavailable. Please try again."
+    try:
+        result = client.chat_completion(
+            model="ibm-granite/granite-3.3-8b-instruct",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=400,
+            temperature=0.7,
+        )
+        return result.choices[0].message.content
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 def analyze_strategy(race_summary: dict) -> str:
     try:
@@ -73,6 +60,6 @@ Give a direct recommendation with brief reasoning in 2-3 sentences."""
     return query_granite(prompt)
 
 if __name__ == "__main__":
-    print("Testing Granite via OpenRouter...")
+    print("Testing Granite via HF InferenceClient...")
     result = recommend_pit_window(25, "MEDIUM", 20, 0.8)
     print(result)
