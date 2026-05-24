@@ -1,22 +1,22 @@
 ﻿import os
-from huggingface_hub import InferenceClient
+from openai import OpenAI
 
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
 
-client = InferenceClient(
-    provider="hf-inference",
+client = OpenAI(
+    base_url="https://api-inference.huggingface.co/v1",
     api_key=HF_TOKEN,
 )
 
 def query_granite(prompt: str) -> str:
     try:
-        result = client.chat_completion(
-            model="ibm-granite/granite-3.3-8b-instruct",
+        response = client.chat.completions.create(
+            model="ibm-granite/granite-4.1-8b",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=400,
             temperature=0.7,
         )
-        return result.choices[0].message.content
+        return response.choices[0].message.content
     except Exception as e:
         return f"Error: {str(e)}"
 
@@ -60,6 +60,6 @@ Give a direct recommendation with brief reasoning in 2-3 sentences."""
     return query_granite(prompt)
 
 if __name__ == "__main__":
-    print("Testing Granite via HF InferenceClient...")
+    print("Testing Granite via HF OpenAI endpoint...")
     result = recommend_pit_window(25, "MEDIUM", 20, 0.8)
     print(result)
