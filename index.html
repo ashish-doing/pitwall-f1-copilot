@@ -621,7 +621,7 @@ Pit window timing: optimal ✓</div></div>
   </div>
 </section>
 
-<div class="ibm-section reveal">
+<div class="ibm-section reveal" id="ibm">
   <div class="ibm-inner">
     <div class="section-label">IBM Technologies</div>
     <h2 class="section-title">Built with <span>IBM</span> AI</h2>
@@ -865,75 +865,7 @@ Pit window timing: optimal ✓</div></div>
 </div><!-- end #main-page -->
 
 <script>
-// ============================================
-// CINEMATIC INTRO SEQUENCE
-// ============================================
-(function(){
-  const TOTAL_MS = 5800; // total intro duration
-
-  // Step 1: Form the track (0-2500ms)
-  setTimeout(()=>{
-    document.getElementById('track-outer').style.strokeDashoffset='0';
-    document.getElementById('track-surface').style.strokeDashoffset='0';
-    document.getElementById('track-center').style.strokeDashoffset='0';
-    document.getElementById('track-glow').style.strokeDashoffset='0';
-  }, 200);
-
-  // Step 2: Show kerbs (2400ms)
-  setTimeout(()=>{
-    const kl=document.getElementById('kerb-l');
-    const klw=document.getElementById('kerb-lw');
-    const kr=document.getElementById('kerb-r');
-    if(kl)kl.style.opacity='0.7';
-    if(klw)klw.style.opacity='0.5';
-    if(kr)kr.style.opacity='0.65';
-  }, 2400);
-
-  // Step 3: Cars slide in from sides (2800ms)
-  setTimeout(()=>{
-    const carL=document.getElementById('car-l');
-    const carR=document.getElementById('car-r');
-    document.getElementById('intro-cars').style.opacity='1';
-    carL.style.transition='all 0.9s cubic-bezier(0.2,0,0.2,1)';
-    carL.style.opacity='1';
-    carL.style.transform='translate(-20%,-50%) scale(1)';
-    carR.style.transition='all 0.9s cubic-bezier(0.2,0,0.2,1)';
-    carR.style.opacity='1';
-    carR.style.transform='translate(20%,-50%) scale(1) scaleX(-1)';
-  }, 2800);
-
-  // Step 4: Title appears (3600ms)
-  setTimeout(()=>{
-    const t=document.getElementById('intro-title');
-    t.style.transition='opacity 0.6s ease, transform 0.6s ease';
-    t.style.transform='translateX(-50%) translateY(0)';
-    t.style.opacity='1';
-  }, 3600);
-
-  // Step 5: Everything fades out (4800ms)
-  setTimeout(()=>{
-    const intro=document.getElementById('intro');
-    intro.style.transition='opacity 0.9s ease';
-    intro.style.opacity='0';
-  }, 4800);
-
-  // Step 6: Main page appears (5600ms)
-  setTimeout(()=>{
-    document.getElementById('intro').style.display='none';
-    document.getElementById('intro').classList.add('done');
-    const mp=document.getElementById('main-page');
-    mp.classList.add('visible');
-    // trigger first reveal elements
-    document.querySelectorAll('.reveal').forEach(el=>{
-      if(isInView(el))el.classList.add('shown');
-    });
-  }, 5600);
-
-  // Fix intro title initial state
-  const t=document.getElementById('intro-title');
-  t.style.transform='translateX(-50%) translateY(20px)';
-  t.style.transition='none';
-})();
+// Cockpit intro handled inline above
 
 // ============================================
 // SCROLL REVEAL
