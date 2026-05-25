@@ -4,14 +4,14 @@ from openai import OpenAI
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
 
 client = OpenAI(
-    base_url="https://api-inference.huggingface.co/v1",
-    api_key=HF_TOKEN,
+    base_url="https://api.groq.com/openai/v1",
+    api_key=os.environ.get("GROQ_API_KEY", ""),
 )
 
 def query_granite(prompt: str) -> str:
     try:
         response = client.chat.completions.create(
-            model="ibm-granite/granite-4.1-8b",
+            model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=400,
             temperature=0.7,
