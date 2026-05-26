@@ -865,14 +865,12 @@ Pit window timing: optimal ✓</div></div>
 </div><!-- end #main-page -->
 
 <script>
-// Cockpit intro handled inline above
-
-// Fallback — ensure main page shows after intro
+// Ensure main page shows after cockpit intro
 setTimeout(() => {
   const intro = document.getElementById('intro');
-  if(intro) { intro.style.display = 'none'; }
+  if(intro){ intro.style.transition='opacity 0.5s ease'; intro.style.opacity='0'; setTimeout(()=>{ intro.style.display='none'; }, 500); }
   const mp = document.getElementById('main-page');
-  if(mp) { mp.classList.add('visible'); }
+  if(mp){ mp.classList.add('visible'); }
   document.querySelectorAll('.reveal').forEach(el => el.classList.add('shown'));
 }, 6500);
 
