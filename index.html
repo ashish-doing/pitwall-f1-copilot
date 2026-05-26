@@ -867,6 +867,15 @@ Pit window timing: optimal ✓</div></div>
 <script>
 // Cockpit intro handled inline above
 
+// Fallback — ensure main page shows after intro
+setTimeout(() => {
+  const intro = document.getElementById('intro');
+  if(intro) { intro.style.display = 'none'; }
+  const mp = document.getElementById('main-page');
+  if(mp) { mp.classList.add('visible'); }
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('shown'));
+}, 6500);
+
 // ============================================
 // SCROLL REVEAL
 // ============================================
