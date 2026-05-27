@@ -14,6 +14,65 @@ from granite_engine import analyze_strategy, recommend_pit_window
 
 session_cache = {}
 
+def build_degradation_chart(session, driver, summary):
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
+    from fastf1_loader import get_driver_stints
+
+    stints = get_driver_stints(session, driver)
+    stints = stints.dropna(subset=['LapTimeSeconds'])
+    stints = stints[stints['LapTimeSeconds'] < stints['LapTimeSeconds'].quantile(0.97)]  # remove outliers
+
+    compound_colors = {
+        'SOFT': '#E8002D',
+        'MEDIUM': '#FFD700',
+        'HARD': '#CCCCCC',
+        'INTERMEDIATE': '#39B54A',
+        'WET': '#0067FF',
+        'UNKNOWN': '#888888'
+    }
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+    fig.patch.set_facecolor('#0e0e0e')
+    ax.set_facecolor('#0e0e0e')
+
+    # Plot each compound segment
+    for compound, group in stints.groupby('Compound', sort=False):
+        color = compound_colors.get(str(compound).upper(), '#888888')
+        ax.scatter(group['LapNumber'], group['LapTimeSeconds'],
+                   color=color, s=18, alpha=0.85, zorder=3, label=compound)
+        ax.plot(group['LapNumber'], group['LapTimeSeconds'],
+                color=color, alpha=0.3, linewidth=1, zorder=2)
+
+    # Pit stop vertical lines
+    for pit_lap in summary.get('pit_stop_laps', []):
+        ax.axvline(x=pit_lap, color='#ffffff', linewidth=1, linestyle='--', alpha=0.4)
+        ax.text(pit_lap + 0.3, stints['LapTimeSeconds'].min(),
+                'PIT', color='#ffffff', fontsize=6, alpha=0.5, va='bottom')
+
+    # Styling
+    ax.set_xlabel('Lap', color='#777777', fontsize=9)
+    ax.set_ylabel('Lap Time (s)', color='#777777', fontsize=9)
+    ax.set_title(f"{driver} — Tyre Degradation · {summary['grand_prix']} {summary['year']}",
+                 color='#F0F0F0', fontsize=10, pad=10)
+    ax.tick_params(colors='#555555', labelsize=8)
+    ax.spines['bottom'].set_color('#222222')
+    ax.spines['left'].set_color('#222222')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.grid(axis='y', color='#1e1e1e', linewidth=0.8, zorder=1)
+
+    # Legend
+    patches = [mpatches.Patch(color=compound_colors.get(str(c).upper(), '#888'), label=str(c))
+               for c in stints['Compound'].dropna().unique()]
+    ax.legend(handles=patches, facecolor='#161616', edgecolor='#333333',
+              labelcolor='#F0F0F0', fontsize=8, loc='upper right')
+
+    plt.tight_layout()
+    return fig
+
 def load_and_analyze(year, grand_prix, driver):
     try:
         cache_key = f"{year}_{grand_prix}"
@@ -28,9 +87,11 @@ def load_and_analyze(year, grand_prix, driver):
 **Compounds Used:** {', '.join(summary['compounds_used'])}
 **Pit Stop Laps:** {summary['pit_stop_laps']}
         """
-        return summary_text.strip(), analysis
+        # Build degradation chart
+        fig = build_degradation_chart(session, driver, summary)
+        return summary_text.strip(), analysis, fig
     except Exception as e:
-        return f"Error: {str(e)}", ""
+        return f"Error: {str(e)}", "", None
 
 def get_pit_recommendation(lap, compound, tyre_life, lap_delta):
     try:
@@ -62,7 +123,8 @@ with gr.Blocks(title="PitWall — F1 Race Strategy Copilot") as app:
         analyze_btn = gr.Button("🔍 Analyze Strategy", variant="primary")
         summary_out = gr.Markdown(label="Race Summary")
         analysis_out = gr.Textbox(label="🤖 IBM Granite Strategy Analysis", lines=12, interactive=False)
-        analyze_btn.click(fn=load_and_analyze, inputs=[year_input, gp_input, driver_input], outputs=[summary_out, analysis_out])
+        deg_chart = gr.Plot(label="📈 Tyre Degradation — Lap Times by Compound")
+        analyze_btn.click(fn=load_and_analyze, inputs=[year_input, gp_input, driver_input], outputs=[summary_out, analysis_out, deg_chart])
 
     with gr.Tab("⏱️ Live Pit Window Advisor"):
         gr.Markdown("Get real-time pit stop recommendations based on current race conditions.")
