@@ -222,20 +222,31 @@ Output per recommendation: decision label + full Q-values for all 3 actions + co
 ## Features
 
 ### Tab 1 — Race Strategy Analysis
-**Available options:** Season `2022` `2023` `2024` · Grand Prix: any from that season (e.g. `Monaco` `Silverstone` `Bahrain`) · Driver: any code (e.g. `LEC` `VER` `HAM` `SAI` `NOR`)
+**Available options:**
+- Season: `2022` · `2023` · `2024`
+- Grand Prix: `Monaco` · `Silverstone` · `Bahrain` · `Abu Dhabi` · `Monza` · `Spa` · `Suzuka` · and more
+- Driver: `LEC` · `VER` · `HAM` · `SAI` · `NOR` · `RUS` · `PER` · and more
 
 - FastF1 loads real official timing data: total laps, best lap, compounds, pit stop laps
 - IBM Granite + Docling regulation context → 3-paragraph strategy breakdown
 - Identifies suboptimal decisions and proposes alternatives
 
 ### Tab 2 — Live Pit Window Advisor
-**Available options:** Current Lap `1–70` · Tyre Age `1–50` · Delta any float (e.g. `0.5`) · Compound `SOFT` `MEDIUM` `HARD` `INTERMEDIATE` `WET`
+**Available options:**
+- Current Lap: `1–70`
+- Tyre Age: `1–50 laps`
+- Lap Time Delta: any float (e.g. `0.5` · `1.2`)
+- Compound: `SOFT` · `MEDIUM` · `HARD` · `INTERMEDIATE` · `WET`
 
 - IBM Granite outputs a direct pit/stay-out recommendation with reasoning
 - Simulates real-time pit wall decision support
 
 ### Tab 3 — RL Pit Optimizer
-**Available options:** Tyre Age `1–55` · Laps Remaining `1–60` · Delta any float · Compound `SOFT` `MEDIUM` `HARD` `INTERMEDIATE` `WET`
+**Available options:**
+- Tyre Age: `1–55 laps`
+- Laps Remaining: `1–60`
+- Lap Time Delta: any float (e.g. `0.8` · `1.5`)
+- Compound: `SOFT` · `MEDIUM` · `HARD` · `INTERMEDIATE` · `WET`
 
 - Q-Learning agent trained on 23,400 real lap decisions
 - Full Q-value breakdown for all 3 actions — not a black box
