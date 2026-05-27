@@ -11,52 +11,6 @@
 html{scroll-behavior:smooth}
 body{background:var(--carbon);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden}
 
-/* ========= CINEMATIC INTRO ========= */
-#intro{
-  position:fixed;inset:0;z-index:1000;background:#000;
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
-}
-#intro.done{pointer-events:none}
-
-/* Track forming animation */
-#track-form-svg{
-  position:absolute;inset:0;width:100%;height:100%;
-}
-
-/* Cars sticker overlay */
-.intro-cars{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  opacity:0;
-}
-.intro-car-l{
-  position:absolute;left:50%;top:50%;
-  transform:translate(-140%,-50%) scale(0.8);
-  filter:drop-shadow(0 0 20px rgba(232,0,45,0.6)) drop-shadow(0 0 2px #fff);
-  opacity:0;
-}
-.intro-car-r{
-  position:absolute;right:50%;top:50%;
-  transform:translate(140%,-50%) scale(0.8) scaleX(-1);
-  filter:drop-shadow(0 0 20px rgba(255,128,0,0.6)) drop-shadow(0 0 2px #fff);
-  opacity:0;
-}
-
-/* Intro text */
-.intro-title{
-  position:absolute;bottom:15%;left:50%;transform:translateX(-50%);
-  text-align:center;opacity:0;
-}
-.intro-title h1{
-  font-family:'Orbitron',monospace;font-size:clamp(50px,8vw,100px);
-  font-weight:900;color:#fff;letter-spacing:-2px;line-height:0.9;
-}
-.intro-title h1 span{color:#E8002D}
-.intro-title p{
-  font-family:'Orbitron',monospace;font-size:clamp(9px,1.2vw,13px);
-  color:#444;letter-spacing:0.4em;text-transform:uppercase;margin-top:12px;
-}
-
 /* ========= MAIN PAGE ========= */
 #main-page{opacity:0;transform:translateY(30px);transition:opacity 0.8s ease,transform 0.8s ease}
 #main-page.visible{opacity:1;transform:translateY(0)}
@@ -85,7 +39,6 @@ nav{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   text-align:center;padding:8rem 2rem 4rem;overflow:hidden;
 }
-/* hero bg track subtle */
 .hero-track-bg{
   position:absolute;inset:0;opacity:0.04;pointer-events:none;
   background:url("data:image/svg+xml,%3Csvg viewBox='0 0 1440 900' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M720 100 C500 200 200 400 100 600 C50 700 100 800 300 850 L1400 850 L1400 700 C1200 650 1100 550 1000 450 C900 350 850 250 720 100Z' fill='%23E8002D'/%3E%3C/svg%3E") center/cover;
@@ -208,315 +161,424 @@ footer{position:relative;z-index:1;background:var(--surface);border-top:1px soli
 <body>
 
 <!-- ============================== -->
-<!-- CINEMATIC INTRO SEQUENCE       -->
+<!-- COCKPIT INTRO SEQUENCE         -->
 <!-- ============================== -->
 <div id="intro">
+  <style>
+    #intro {
+      position: fixed; inset: 0; z-index: 1000;
+      background: #000; overflow: hidden;
+      cursor: pointer;
+    }
+    .road-container {
+      position: absolute; inset: 0;
+      perspective: 400px;
+      overflow: hidden;
+    }
+    .road-surface {
+      position: absolute;
+      bottom: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(180deg, #1a1a1a 0%, #111 40%, #0a0a0a 100%);
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotateX(25deg);
+    }
+    .road-lines {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .lane-line {
+      position: absolute;
+      left: 50%;
+      width: 6px;
+      height: 120px;
+      background: #fff;
+      transform: translateX(-50%);
+      border-radius: 3px;
+      animation: laneMarch 0.6s linear infinite;
+      opacity: 0.7;
+    }
+    .center-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: repeating-linear-gradient(180deg, #ffdd00 0px, #ffdd00 40px, transparent 40px, transparent 80px);
+      transform: translateX(-50%);
+      animation: roadScroll 0.4s linear infinite;
+    }
+    .kerb-left {
+      position: absolute;
+      left: 15%;
+      top: 0; bottom: 0;
+      width: 12px;
+      background: repeating-linear-gradient(180deg, #E8002D 0px, #E8002D 30px, #fff 30px, #fff 60px);
+      animation: roadScroll 0.4s linear infinite;
+    }
+    .kerb-right {
+      position: absolute;
+      right: 15%;
+      top: 0; bottom: 0;
+      width: 12px;
+      background: repeating-linear-gradient(180deg, #E8002D 0px, #E8002D 30px, #fff 30px, #fff 60px);
+      animation: roadScroll 0.4s linear infinite;
+      animation-delay: 0.15s;
+    }
+    .road-edge-left {
+      position: absolute;
+      left: calc(15% + 12px);
+      top: 0; bottom: 0;
+      width: 3px;
+      background: rgba(255,255,255,0.3);
+    }
+    .road-edge-right {
+      position: absolute;
+      right: calc(15% + 12px);
+      top: 0; bottom: 0;
+      width: 3px;
+      background: rgba(255,255,255,0.3);
+    }
+    @keyframes roadScroll {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 60px; }
+    }
+    @keyframes laneMarch {
+      0% { transform: translateX(-50%) translateY(-120px) scaleY(0.3); opacity: 0; }
+      10% { opacity: 0.7; }
+      90% { opacity: 0.7; }
+      100% { transform: translateX(-50%) translateY(110vh) scaleY(3); opacity: 0; }
+    }
+    .cockpit-frame {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .pillar-left {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 18%;
+      background: linear-gradient(90deg, #0a0a0a 60%, transparent);
+    }
+    .pillar-right {
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 18%;
+      background: linear-gradient(-90deg, #0a0a0a 60%, transparent);
+    }
+    .frame-top {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 22%;
+      background: linear-gradient(180deg, #050505 50%, transparent);
+    }
+    .halo-bar {
+      position: absolute;
+      top: 18%;
+      left: 38%;
+      right: 38%;
+      height: 14px;
+      background: #1a1a1a;
+      border-radius: 0 0 6px 6px;
+      border: 1px solid #333;
+    }
+    .cockpit-left {
+      position: absolute;
+      left: 0; bottom: 0;
+      width: 32%;
+      height: 45%;
+      background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 50%, #0d0d0d 100%);
+      clip-path: polygon(0 100%, 100% 60%, 100% 100%);
+      border-right: 1px solid #222;
+    }
+    .cockpit-right {
+      position: absolute;
+      right: 0; bottom: 0;
+      width: 32%;
+      height: 45%;
+      background: linear-gradient(-135deg, #0d0d0d 0%, #1a1a1a 50%, #0d0d0d 100%);
+      clip-path: polygon(100% 100%, 0 60%, 0 100%);
+      border-left: 1px solid #222;
+    }
+    .steering-wheel-wrap {
+      position: absolute;
+      bottom: -8%;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: wheelOscillate 3s ease-in-out infinite;
+    }
+    @keyframes wheelOscillate {
+      0%, 100% { transform: translateX(-50%) rotate(-8deg); }
+      25% { transform: translateX(-50%) rotate(5deg); }
+      50% { transform: translateX(-50%) rotate(-3deg); }
+      75% { transform: translateX(-50%) rotate(7deg); }
+    }
+    .speed-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 40%, rgba(0,0,0,0.7) 100%);
+      pointer-events: none;
+      animation: speedPulse 0.3s ease-in-out infinite alternate;
+    }
+    @keyframes speedPulse {
+      0% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+    .speed-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .speed-streak {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      animation: streak 0.3s linear infinite;
+    }
+    @keyframes streak {
+      0% { left: -30%; width: 20%; opacity: 0; }
+      50% { opacity: 1; }
+      100% { left: 110%; opacity: 0; }
+    }
+    .hud {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .hud-speed {
+      position: absolute;
+      top: 8%;
+      left: 5%;
+      font-family: 'Orbitron', monospace;
+      color: rgba(255,255,255,0.6);
+      font-size: clamp(12px, 2vw, 18px);
+    }
+    .hud-speed-num {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+    }
+    .hud-gear {
+      position: absolute;
+      top: 8%;
+      right: 5%;
+      text-align: right;
+      font-family: 'Orbitron', monospace;
+      color: rgba(255,255,255,0.5);
+      font-size: clamp(10px, 1.5vw, 14px);
+    }
+    .hud-gear-num {
+      font-size: clamp(32px, 6vw, 60px);
+      font-weight: 900;
+      color: #E8002D;
+      line-height: 1;
+    }
+    .hud-rpm {
+      position: absolute;
+      bottom: 48%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40%;
+    }
+    .rpm-bar-bg {
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .rpm-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00ff88, #ffdd00, #E8002D);
+      border-radius: 2px;
+      animation: rpmFluctuate 0.2s ease-in-out infinite alternate;
+    }
+    @keyframes rpmFluctuate {
+      0% { width: 78%; }
+      100% { width: 95%; }
+    }
+    .rpm-label {
+      text-align: center;
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(7px, 1vw, 10px);
+      color: rgba(255,255,255,0.4);
+      margin-top: 4px;
+      letter-spacing: 0.2em;
+    }
+    .hud-lap {
+      position: absolute;
+      top: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(8px, 1.2vw, 12px);
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.15em;
+    }
+    .hud-lap-num {
+      font-size: clamp(14px, 2.5vw, 22px);
+      color: rgba(255,255,255,0.8);
+      font-weight: 700;
+    }
+    .cockpit-title {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .cockpit-title h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(48px, 9vw, 110px);
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -2px;
+      line-height: 0.9;
+      text-shadow: 0 0 40px rgba(232,0,45,0.5), 0 0 80px rgba(232,0,45,0.2);
+    }
+    .cockpit-title h1 span { color: #E8002D; }
+    .cockpit-title p {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(9px, 1.3vw, 14px);
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      margin-top: 12px;
+    }
+    .skip-btn {
+      position: absolute;
+      bottom: 5%;
+      right: 5%;
+      font-family: 'Orbitron', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 6px 14px;
+      transition: all 0.2s;
+      opacity: 0;
+      animation: fadeInBtn 0.5s ease 1s forwards;
+    }
+    .skip-btn:hover { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.3); }
+    @keyframes fadeInBtn { to { opacity: 1; } }
+    .audio-hint {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeInBtn 0.5s ease 1.5s forwards;
+    }
+  </style>
 
-  <!-- TRACK FORMING SVG -->
-  <svg id="track-form-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <linearGradient id="tglow" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#E8002D" stop-opacity="0"/>
-        <stop offset="50%" stop-color="#E8002D" stop-opacity="0.8"/>
-        <stop offset="100%" stop-color="#E8002D" stop-opacity="0"/>
-      </linearGradient>
-      <filter id="glow">
-        <feGaussianBlur stdDeviation="6" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-      <filter id="softglow">
-        <feGaussianBlur stdDeviation="3" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
+  <!-- AUDIO -->
+  <audio id="engine-audio" loop>
+    <source src="engine.mp3" type="audio/mpeg">
+  </audio>
 
-    <!-- BACKGROUND GRID -->
-    <rect width="1440" height="900" fill="#000"/>
-    <g opacity="0.04" id="grid-lines">
-      <line x1="0" y1="100" x2="1440" y2="100" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="0" y1="200" x2="1440" y2="200" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="0" y1="300" x2="1440" y2="300" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="0" y1="400" x2="1440" y2="400" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="0" y1="500" x2="1440" y2="500" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="0" y1="600" x2="1440" y2="600" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="0" y1="700" x2="1440" y2="700" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="0" y1="800" x2="1440" y2="800" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="200" y1="0" x2="200" y2="900" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="400" y1="0" x2="400" y2="900" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="600" y1="0" x2="600" y2="900" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="800" y1="0" x2="800" y2="900" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="1000" y1="0" x2="1000" y2="900" stroke="#E8002D" stroke-width="0.5"/>
-      <line x1="1200" y1="0" x2="1200" y2="900" stroke="#E8002D" stroke-width="0.5"/>
-    </g>
-
-    <!-- CIRCUIT TRACK - OUTER (Monaco-inspired S shape) -->
-    <!-- This is the "forming" track path -->
-    <path id="track-outer"
-      d="M720,80 C620,90 480,120 380,200 C260,295 160,420 120,520 C80,620 100,720 180,780 C260,840 380,860 520,860 L960,860 C1100,860 1220,840 1300,780 C1380,720 1400,640 1380,560 C1360,480 1300,420 1240,360 C1180,300 1120,240 1080,180 C1040,120 960,80 860,78 Z"
-      fill="none" stroke="#1a1a1a" stroke-width="80" stroke-linecap="round" stroke-linejoin="round"
-      stroke-dasharray="6000" stroke-dashoffset="6000"
-      style="transition:stroke-dashoffset 2.5s cubic-bezier(0.4,0,0.2,1)"
-    />
-    <!-- TRACK SURFACE -->
-    <path id="track-surface"
-      d="M720,80 C620,90 480,120 380,200 C260,295 160,420 120,520 C80,620 100,720 180,780 C260,840 380,860 520,860 L960,860 C1100,860 1220,840 1300,780 C1380,720 1400,640 1380,560 C1360,480 1300,420 1240,360 C1180,300 1120,240 1080,180 C1040,120 960,80 860,78 Z"
-      fill="none" stroke="#111" stroke-width="65" stroke-linecap="round" stroke-linejoin="round"
-      stroke-dasharray="6000" stroke-dashoffset="6000"
-      style="transition:stroke-dashoffset 2.5s cubic-bezier(0.4,0,0.2,1) 0.1s"
-    />
-    <!-- TRACK CENTER LINE -->
-    <path id="track-center"
-      d="M720,80 C620,90 480,120 380,200 C260,295 160,420 120,520 C80,620 100,720 180,780 C260,840 380,860 520,860 L960,860 C1100,860 1220,840 1300,780 C1380,720 1400,640 1380,560 C1360,480 1300,420 1240,360 C1180,300 1120,240 1080,180 C1040,120 960,80 860,78 Z"
-      fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="25,35" stroke-linecap="round"
-      stroke-dashoffset="6000"
-      style="transition:stroke-dashoffset 2.5s cubic-bezier(0.4,0,0.2,1) 0.2s"
-    />
-    <!-- KERB STRIPES - LEFT -->
-    <path id="kerb-l"
-      d="M380,200 C260,295 160,420 120,520 C80,620 100,720 180,780"
-      fill="none" stroke="#E8002D" stroke-width="10" stroke-dasharray="20,20" opacity="0"
-      style="transition:opacity 0.5s ease 2.2s"
-    />
-    <path
-      d="M380,200 C260,295 160,420 120,520 C80,620 100,720 180,780"
-      fill="none" stroke="#fff" stroke-width="10" stroke-dasharray="20,20" stroke-dashoffset="20" opacity="0" id="kerb-lw"
-      style="transition:opacity 0.5s ease 2.2s"
-    />
-    <!-- KERB STRIPES - RIGHT -->
-    <path id="kerb-r"
-      d="M1080,180 C1040,120 960,80 860,78"
-      fill="none" stroke="#E8002D" stroke-width="10" stroke-dasharray="18,18" opacity="0"
-      style="transition:opacity 0.5s ease 2.4s"
-    />
-    <!-- GLOW ALONG TRACK -->
-    <path id="track-glow"
-      d="M720,80 C620,90 480,120 380,200 C260,295 160,420 120,520 C80,620 100,720 180,780 C260,840 380,860 520,860 L960,860 C1100,860 1220,840 1300,780 C1380,720 1400,640 1380,560 C1360,480 1300,420 1240,360 C1180,300 1120,240 1080,180 C1040,120 960,80 860,78 Z"
-      fill="none" stroke="rgba(232,0,45,0.15)" stroke-width="90" stroke-linecap="round" filter="url(#glow)"
-      stroke-dasharray="6000" stroke-dashoffset="6000"
-      style="transition:stroke-dashoffset 2.5s cubic-bezier(0.4,0,0.2,1) 0.05s"
-    />
-    <!-- FADE OVERLAY - darkens track toward edges -->
-    <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
-      <stop offset="40%" stop-color="transparent"/>
-      <stop offset="100%" stop-color="#000" stop-opacity="0.85"/>
-    </radialGradient>
-    <rect width="1440" height="900" fill="url(#vignette)"/>
-  </svg>
-
-  <!-- CARS STICKER OVERLAY -->
-  <div class="intro-cars" id="intro-cars">
-    <!-- FERRARI #16 - LEFT -->
-    <div class="intro-car-l" id="car-l">
-      <svg width="480" height="130" viewBox="0 0 480 130">
-        <!-- white border glow effect -->
-        <path d="M60,30 L380,18 Q420,16 438,34 Q452,48 446,68 L380,80 L60,85 Q44,82 38,64 Q32,46 60,30 Z" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3"/>
-        <!-- exhaust glow animated -->
-        <ellipse cx="30" cy="55" rx="28" ry="10" fill="#ff4400" opacity="0.7">
-          <animate attributeName="rx" values="28;40;22;35;28" dur="0.12s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.7;0.3;0.9;0.4;0.7" dur="0.12s" repeatCount="indefinite"/>
-        </ellipse>
-        <ellipse cx="18" cy="55" rx="14" ry="6" fill="#ffaa00" opacity="0.85">
-          <animate attributeName="rx" values="14;22;10;18;14" dur="0.09s" repeatCount="indefinite"/>
-        </ellipse>
-        <!-- speed blur -->
-        <line x1="28" y1="42" x2="-50" y2="37" stroke="#E8002D" stroke-width="2.5" opacity="0.3"/>
-        <line x1="28" y1="55" x2="-80" y2="55" stroke="#E8002D" stroke-width="3.5" opacity="0.25"/>
-        <line x1="28" y1="68" x2="-45" y2="73" stroke="#E8002D" stroke-width="2" opacity="0.25"/>
-        <!-- rear wing endplates -->
-        <rect x="36" y="14" width="8" height="28" rx="1.5" fill="#990015"/>
-        <rect x="72" y="14" width="8" height="28" rx="1.5" fill="#990015"/>
-        <!-- rear wing main -->
-        <rect x="36" y="14" width="44" height="10" rx="2" fill="#cc0020"/>
-        <rect x="42" y="8" width="32" height="8" rx="1.5" fill="#aa0018"/>
-        <!-- rear diffuser -->
-        <path d="M44,82 L68,72 L68,90 L44,100 Z" fill="#770010"/>
-        <!-- rear wheel + tyre -->
-        <ellipse cx="90" cy="98" rx="30" ry="28" fill="#0d0d0d"/>
-        <ellipse cx="90" cy="98" rx="22" ry="20" fill="#141414"/>
-        <ellipse cx="90" cy="98" rx="30" ry="28" fill="none" stroke="#1e1e1e" stroke-width="4"/>
-        <ellipse cx="90" cy="98" rx="10" ry="9" fill="#1a1a1a"/>
-        <circle cx="90" cy="70" r="3" fill="#2a2a2a"/>
-        <circle cx="90" cy="126" r="3" fill="#2a2a2a"/>
-        <circle cx="62" cy="98" r="3" fill="#2a2a2a"/>
-        <circle cx="118" cy="98" r="3" fill="#2a2a2a"/>
-        <!-- brake disc glow -->
-        <ellipse cx="90" cy="98" rx="13" ry="12" fill="rgba(255,80,0,0.18)"/>
-        <!-- MAIN BODY -->
-        <path d="M62,36 L388,22 Q428,20 444,36 Q456,50 450,68 L388,80 L62,86 Q44,82 40,62 Q36,44 62,36 Z" fill="#E8002D"/>
-        <!-- body highlight stripe -->
-        <path d="M78,37 L360,25 L368,32 L78,44 Z" fill="#ff2040" opacity="0.45"/>
-        <!-- sidepod contour -->
-        <path d="M120,40 L320,28 Q345,26 352,36 L352,70 Q345,76 320,74 L120,78 Z" fill="#cc0020"/>
-        <path d="M126,42 L314,30 Q336,28 342,38 L342,64 Q336,70 314,68 L126,72 Z" fill="#b80018"/>
-        <!-- engine cover hump -->
-        <path d="M200,28 Q240,18 275,24 L278,44 Q242,36 200,42 Z" fill="#dd001e"/>
-        <!-- cockpit surround -->
-        <ellipse cx="240" cy="30" rx="48" ry="18" fill="#cc0020"/>
-        <!-- cockpit opening -->
-        <path d="M198,30 Q240,16 282,30 L276,42 Q240,28 204,42 Z" fill="#080808"/>
-        <!-- helmet -->
-        <ellipse cx="240" cy="24" rx="20" ry="16" fill="#1a1a1a"/>
-        <ellipse cx="244" cy="21" rx="14" ry="11" fill="#222"/>
-        <!-- visor -->
-        <path d="M230,18 Q244,13 258,19 L254,25 Q240,20 232,25 Z" fill="#0d2a5a" opacity="0.9"/>
-        <!-- HALO -->
-        <path d="M200,16 Q240,4 280,16" fill="none" stroke="#1e1e1e" stroke-width="7" stroke-linecap="round"/>
-        <rect x="234" y="4" width="12" height="22" rx="4" fill="#141414"/>
-        <!-- Ferrari prancing horse area -->
-        <rect x="168" y="58" width="16" height="20" rx="1" fill="#FFD700"/>
-        <text x="176" y="71" text-anchor="middle" fill="#111" font-size="7" font-weight="bold" font-family="Arial">SF</text>
-        <!-- sponsor -->
-        <rect x="198" y="62" width="88" height="12" rx="1" fill="#aa0018"/>
-        <text x="242" y="72" text-anchor="middle" fill="#fff" font-size="7.5" font-weight="bold" font-family="Arial" letter-spacing="0.8">SCUDERIA FERRARI</text>
-        <!-- number -->
-        <rect x="378" y="48" width="40" height="20" rx="2" fill="#880010"/>
-        <text x="398" y="62" text-anchor="middle" fill="#fff" font-size="14" font-weight="900" font-family="Arial Black">16</text>
-        <!-- nose cone -->
-        <path d="M388,32 L458,52 L458,68 L388,76 Z" fill="#cc0020"/>
-        <path d="M420,34 L458,52 L458,56 L420,38 Z" fill="#dd2030"/>
-        <!-- front wing cascade -->
-        <rect x="444" y="80" width="36" height="10" rx="2" fill="#cc0020"/>
-        <rect x="448" y="68" width="28" height="8" rx="1.5" fill="#aa0018"/>
-        <rect x="454" y="58" width="16" height="7" rx="1" fill="#990015"/>
-        <!-- front wing endplates -->
-        <rect x="442" y="56" width="8" height="36" rx="1" fill="#880010"/>
-        <rect x="476" y="76" width="7" height="20" rx="1" fill="#880010"/>
-        <!-- front wheel -->
-        <ellipse cx="416" cy="98" rx="28" ry="26" fill="#0d0d0d"/>
-        <ellipse cx="416" cy="98" rx="20" ry="18" fill="#141414"/>
-        <ellipse cx="416" cy="98" rx="28" ry="26" fill="none" stroke="#1e1e1e" stroke-width="4"/>
-        <ellipse cx="416" cy="98" rx="9" ry="8" fill="#1a1a1a"/>
-        <circle cx="416" cy="72" r="2.5" fill="#2a2a2a"/>
-        <circle cx="416" cy="124" r="2.5" fill="#2a2a2a"/>
-        <circle cx="390" cy="98" r="2.5" fill="#2a2a2a"/>
-        <circle cx="442" cy="98" r="2.5" fill="#2a2a2a"/>
-        <ellipse cx="416" cy="98" rx="13" ry="12" fill="rgba(255,80,0,0.15)"/>
-        <!-- suspension arms -->
-        <line x1="388" y1="78" x2="406" y2="84" stroke="#444" stroke-width="2.5"/>
-        <line x1="388" y1="92" x2="406" y2="96" stroke="#444" stroke-width="2.5"/>
-        <line x1="116" y1="76" x2="132" y2="72" stroke="#444" stroke-width="2.5"/>
-        <line x1="116" y1="88" x2="132" y2="86" stroke="#444" stroke-width="2.5"/>
-        <!-- floor -->
-        <path d="M62,86 L444,78 L446,98 L62,108 Z" fill="#770010"/>
-        <!-- bargeboards -->
-        <rect x="148" y="82" width="4" height="12" rx="0.5" fill="#660010"/>
-        <rect x="160" y="80" width="4" height="14" rx="0.5" fill="#660010"/>
-        <rect x="172" y="80" width="4" height="14" rx="0.5" fill="#660010"/>
-        <!-- DRS flap indicator -->
-        <rect x="42" y="24" width="32" height="3" rx="1" fill="#cc0020" opacity="0.6"/>
-        <!-- mirrors -->
-        <rect x="206" y="36" width="18" height="8" rx="1.5" fill="#880015"/>
-        <rect x="258" y="36" width="18" height="8" rx="1.5" fill="#880015"/>
-      </svg>
-    </div>
-
-    <!-- McLAREN #4 - RIGHT (mirrored Ferrari style) -->
-    <div class="intro-car-r" id="car-r">
-      <svg width="480" height="130" viewBox="0 0 480 130">
-        <!-- white border -->
-        <path d="M60,30 L380,18 Q420,16 438,34 Q452,48 446,68 L380,80 L60,85 Q44,82 38,64 Q32,46 60,30 Z" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3"/>
-        <!-- exhaust -->
-        <ellipse cx="30" cy="55" rx="28" ry="10" fill="#ff5500" opacity="0.7">
-          <animate attributeName="rx" values="26;38;20;32;26" dur="0.11s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.7;0.3;0.9;0.4;0.7" dur="0.11s" repeatCount="indefinite"/>
-        </ellipse>
-        <ellipse cx="18" cy="55" rx="14" ry="6" fill="#ffcc00" opacity="0.85">
-          <animate attributeName="rx" values="12;20;9;16;12" dur="0.08s" repeatCount="indefinite"/>
-        </ellipse>
-        <!-- speed blur -->
-        <line x1="28" y1="42" x2="-50" y2="37" stroke="#FF8000" stroke-width="2.5" opacity="0.3"/>
-        <line x1="28" y1="55" x2="-80" y2="55" stroke="#FF8000" stroke-width="3.5" opacity="0.25"/>
-        <line x1="28" y1="68" x2="-45" y2="73" stroke="#FF8000" stroke-width="2" opacity="0.25"/>
-        <!-- rear wing -->
-        <rect x="36" y="14" width="8" height="28" rx="1.5" fill="#993300"/>
-        <rect x="72" y="14" width="8" height="28" rx="1.5" fill="#993300"/>
-        <rect x="36" y="14" width="44" height="10" rx="2" fill="#cc5500"/>
-        <rect x="42" y="8" width="32" height="8" rx="1.5" fill="#aa4400"/>
-        <!-- rear diffuser -->
-        <path d="M44,82 L68,72 L68,90 L44,100 Z" fill="#cc5500"/>
-        <!-- rear wheel -->
-        <ellipse cx="90" cy="98" rx="30" ry="28" fill="#0d0d0d"/>
-        <ellipse cx="90" cy="98" rx="22" ry="20" fill="#141414"/>
-        <ellipse cx="90" cy="98" rx="30" ry="28" fill="none" stroke="#1e1e1e" stroke-width="4"/>
-        <ellipse cx="90" cy="98" rx="10" ry="9" fill="#1a1a1a"/>
-        <circle cx="90" cy="70" r="3" fill="#2a2a2a"/>
-        <circle cx="90" cy="126" r="3" fill="#2a2a2a"/>
-        <circle cx="62" cy="98" r="3" fill="#2a2a2a"/>
-        <circle cx="118" cy="98" r="3" fill="#2a2a2a"/>
-        <ellipse cx="90" cy="98" rx="13" ry="12" fill="rgba(255,80,0,0.18)"/>
-        <!-- MAIN BODY - McLaren papaya -->
-        <path d="M62,36 L388,22 Q428,20 444,36 Q456,50 450,68 L388,80 L62,86 Q44,82 40,62 Q36,44 62,36 Z" fill="#FF8000"/>
-        <!-- highlight -->
-        <path d="M78,37 L360,25 L368,32 L78,44 Z" fill="#ffa030" opacity="0.45"/>
-        <!-- sidepod -->
-        <path d="M120,40 L320,28 Q345,26 352,36 L352,70 Q345,76 320,74 L120,78 Z" fill="#e07000"/>
-        <path d="M126,42 L314,30 Q336,28 342,38 L342,64 Q336,70 314,68 L126,72 Z" fill="#cc6000"/>
-        <!-- engine cover -->
-        <path d="M200,28 Q240,18 275,24 L278,44 Q242,36 200,42 Z" fill="#ee7800"/>
-        <!-- cockpit -->
-        <ellipse cx="240" cy="30" rx="48" ry="18" fill="#dd6800"/>
-        <path d="M198,30 Q240,16 282,30 L276,42 Q240,28 204,42 Z" fill="#080808"/>
-        <!-- helmet - Norris style -->
-        <ellipse cx="240" cy="24" rx="20" ry="16" fill="#1a1a1a"/>
-        <ellipse cx="244" cy="21" rx="14" ry="11" fill="#cc2200"/>
-        <!-- visor -->
-        <path d="M230,18 Q244,13 258,19 L254,25 Q240,20 232,25 Z" fill="#1a3a6a" opacity="0.9"/>
-        <!-- HALO -->
-        <path d="M200,16 Q240,4 280,16" fill="none" stroke="#1e1e1e" stroke-width="7" stroke-linecap="round"/>
-        <rect x="234" y="4" width="12" height="22" rx="4" fill="#141414"/>
-        <!-- McLaren logo -->
-        <ellipse cx="174" cy="64" rx="12" ry="8" fill="#000" stroke="#FF8000" stroke-width="1.5"/>
-        <text x="174" y="67" text-anchor="middle" fill="#FF8000" font-size="6" font-weight="bold" font-family="Arial">MCL</text>
-        <!-- sponsor -->
-        <rect x="198" y="62" width="88" height="12" rx="1" fill="#cc6000"/>
-        <text x="242" y="72" text-anchor="middle" fill="#fff" font-size="7.5" font-weight="bold" font-family="Arial" letter-spacing="0.8">McLAREN F1 TEAM</text>
-        <!-- number -->
-        <rect x="378" y="48" width="40" height="20" rx="2" fill="#cc5500"/>
-        <text x="398" y="62" text-anchor="middle" fill="#fff" font-size="14" font-weight="900" font-family="Arial Black">4</text>
-        <!-- nose -->
-        <path d="M388,32 L458,52 L458,68 L388,76 Z" fill="#dd6600"/>
-        <path d="M420,34 L458,52 L458,56 L420,38 Z" fill="#ee8020"/>
-        <!-- front wing -->
-        <rect x="444" y="80" width="36" height="10" rx="2" fill="#cc5500"/>
-        <rect x="448" y="68" width="28" height="8" rx="1.5" fill="#aa4400"/>
-        <rect x="454" y="58" width="16" height="7" rx="1" fill="#993300"/>
-        <rect x="442" y="56" width="8" height="36" rx="1" fill="#882200"/>
-        <rect x="476" y="76" width="7" height="20" rx="1" fill="#882200"/>
-        <!-- front wheel -->
-        <ellipse cx="416" cy="98" rx="28" ry="26" fill="#0d0d0d"/>
-        <ellipse cx="416" cy="98" rx="20" ry="18" fill="#141414"/>
-        <ellipse cx="416" cy="98" rx="28" ry="26" fill="none" stroke="#1e1e1e" stroke-width="4"/>
-        <ellipse cx="416" cy="98" rx="9" ry="8" fill="#1a1a1a"/>
-        <circle cx="416" cy="72" r="2.5" fill="#2a2a2a"/>
-        <circle cx="416" cy="124" r="2.5" fill="#2a2a2a"/>
-        <circle cx="390" cy="98" r="2.5" fill="#2a2a2a"/>
-        <circle cx="442" cy="98" r="2.5" fill="#2a2a2a"/>
-        <ellipse cx="416" cy="98" rx="13" ry="12" fill="rgba(255,80,0,0.15)"/>
-        <!-- suspension -->
-        <line x1="388" y1="78" x2="406" y2="84" stroke="#444" stroke-width="2.5"/>
-        <line x1="388" y1="92" x2="406" y2="96" stroke="#444" stroke-width="2.5"/>
-        <line x1="116" y1="76" x2="132" y2="72" stroke="#444" stroke-width="2.5"/>
-        <line x1="116" y1="88" x2="132" y2="86" stroke="#444" stroke-width="2.5"/>
-        <!-- floor -->
-        <path d="M62,86 L444,78 L446,98 L62,108 Z" fill="#cc5500"/>
-        <!-- bargeboards -->
-        <rect x="148" y="82" width="4" height="12" rx="0.5" fill="#bb4400"/>
-        <rect x="160" y="80" width="4" height="14" rx="0.5" fill="#bb4400"/>
-        <rect x="172" y="80" width="4" height="14" rx="0.5" fill="#bb4400"/>
-        <!-- mirrors -->
-        <rect x="206" y="36" width="18" height="8" rx="1.5" fill="#cc5500"/>
-        <rect x="258" y="36" width="18" height="8" rx="1.5" fill="#cc5500"/>
-      </svg>
+  <!-- MOVING ROAD -->
+  <div class="road-container">
+    <div class="road-surface"></div>
+    <div class="road-lines">
+      <div class="kerb-left"></div>
+      <div class="kerb-right"></div>
+      <div class="road-edge-left"></div>
+      <div class="road-edge-right"></div>
+      <div class="center-line"></div>
     </div>
   </div>
 
-  <!-- INTRO TITLE -->
-  <div class="intro-title" id="intro-title">
+  <!-- SPEED STREAKS -->
+  <div class="speed-overlay" id="speedOverlay"></div>
+
+  <!-- VIGNETTE -->
+  <div class="speed-vignette"></div>
+
+  <!-- COCKPIT FRAME -->
+  <div class="cockpit-frame">
+    <div class="pillar-left"></div>
+    <div class="pillar-right"></div>
+    <div class="frame-top"></div>
+    <div class="halo-bar"></div>
+    <div class="cockpit-left"></div>
+    <div class="cockpit-right"></div>
+  </div>
+
+  <!-- STEERING WHEEL SVG -->
+  <div class="steering-wheel-wrap">
+    <svg width="320" height="240" viewBox="0 0 320 240">
+      <circle cx="160" cy="120" r="100" fill="none" stroke="#222" stroke-width="22"/>
+      <circle cx="160" cy="120" r="100" fill="none" stroke="#2a2a2a" stroke-width="18"/>
+      <path d="M 70,70 A 100,100 0 0,1 160,20" fill="none" stroke="#1a1a1a" stroke-width="20" stroke-linecap="round"/>
+      <path d="M 250,70 A 100,100 0 0,0 160,20" fill="none" stroke="#E8002D" stroke-width="8" stroke-linecap="round" opacity="0.8"/>
+      <path d="M 60,180 A 100,100 0 0,0 160,220" fill="none" stroke="#1a1a1a" stroke-width="20" stroke-linecap="round"/>
+      <path d="M 260,180 A 100,100 0 0,1 160,220" fill="none" stroke="#1a1a1a" stroke-width="20" stroke-linecap="round"/>
+      <line x1="160" y1="20" x2="160" y2="80" stroke="#333" stroke-width="14" stroke-linecap="round"/>
+      <line x1="70" y1="170" x2="120" y2="145" stroke="#333" stroke-width="12" stroke-linecap="round"/>
+      <line x1="250" y1="170" x2="200" y2="145" stroke="#333" stroke-width="12" stroke-linecap="round"/>
+      <circle cx="160" cy="120" r="32" fill="#111" stroke="#2a2a2a" stroke-width="2"/>
+      <circle cx="160" cy="120" r="24" fill="#0d0d0d"/>
+      <rect x="136" y="106" width="48" height="28" rx="3" fill="#E8002D"/>
+      <text x="160" y="124" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold" font-family="Arial" letter-spacing="0.5">FERRARI</text>
+      <rect x="85" y="100" width="22" height="14" rx="2" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+      <rect x="213" y="100" width="22" height="14" rx="2" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+      <circle cx="91" cy="107" r="3" fill="#E8002D"/>
+      <circle cx="100" cy="107" r="3" fill="#00aa44"/>
+      <circle cx="219" cy="107" r="3" fill="#0044aa"/>
+      <circle cx="228" cy="107" r="3" fill="#ffaa00"/>
+      <rect x="144" y="76" width="32" height="12" rx="2" fill="#333" stroke="#444" stroke-width="1"/>
+      <text x="160" y="85" text-anchor="middle" fill="#ffdd00" font-size="6" font-weight="bold" font-family="Arial">DRS</text>
+      <rect x="60" y="115" width="20" height="8" rx="2" fill="#222" stroke="#333"/>
+      <rect x="240" y="115" width="20" height="8" rx="2" fill="#222" stroke="#333"/>
+    </svg>
+  </div>
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-speed">
+      <div style="font-size:clamp(8px,1vw,11px);letter-spacing:0.15em;color:rgba(255,255,255,0.4)">KM/H</div>
+      <div class="hud-speed-num" id="hud-spd">287</div>
+    </div>
+    <div class="hud-gear">
+      <div style="font-size:clamp(8px,1vw,11px);letter-spacing:0.15em;color:rgba(255,255,255,0.4)">GEAR</div>
+      <div class="hud-gear-num">7</div>
+    </div>
+    <div class="hud-lap">
+      <div>LAP</div>
+      <div class="hud-lap-num">32/78</div>
+    </div>
+    <div class="hud-rpm">
+      <div class="rpm-bar-bg"><div class="rpm-bar-fill"></div></div>
+      <div class="rpm-label">RPM 11,842</div>
+    </div>
+  </div>
+
+  <!-- TITLE -->
+  <div class="cockpit-title" id="cockpit-title">
     <h1>PIT<span>WALL</span></h1>
     <p>F1 Race Strategy Copilot</p>
   </div>
 
+  <!-- SKIP -->
+  <div class="skip-btn" onclick="skipIntro()">SKIP ›</div>
+  <div class="audio-hint">🔊 Click anywhere for engine sound</div>
 </div><!-- end #intro -->
+
 
 <!-- ============================== -->
 <!-- MAIN PAGE                      -->
@@ -695,7 +757,7 @@ Pit window timing: optimal ✓</div></div>
       </div>
     </div>
 
-    <!-- MONACO CIRCUIT - enhanced -->
+    <!-- MONACO CIRCUIT -->
     <div style="background:#060606;border:1px solid rgba(255,255,255,0.06);border-radius:3px;padding:1.125rem;margin-bottom:0.875rem">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
         <div style="font-family:'Orbitron',monospace;font-size:0.55rem;color:#333;letter-spacing:0.22em">MONACO CIRCUIT — LAP TRACKER</div>
@@ -715,20 +777,15 @@ Pit window timing: optimal ✓</div></div>
             <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
-        <!-- Track layers -->
         <path d="M90,255 L90,175 Q90,75 165,55 L335,45 Q415,40 458,76 Q498,110 518,136 L555,175 Q582,205 582,235 Q582,262 555,275 L205,275 Q148,275 90,255 Z" fill="none" stroke="#282828" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M90,255 L90,175 Q90,75 165,55 L335,45 Q415,40 458,76 Q498,110 518,136 L555,175 Q582,205 582,235 Q582,262 555,275 L205,275 Q148,275 90,255 Z" fill="none" stroke="#141414" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- Surface texture -->
         <path d="M90,255 L90,175 Q90,75 165,55 L335,45 Q415,40 458,76 Q498,110 518,136 L555,175 Q582,205 582,235 Q582,262 555,275 L205,275 Q148,275 90,255 Z" fill="none" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="6,10" opacity="0.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- Sector markers -->
         <line x1="90" y1="255" x2="90" y2="242" stroke="#E8002D" stroke-width="3.5"/>
         <line x1="335" y1="45" x2="335" y2="58" stroke="#FFD700" stroke-width="3.5"/>
         <line x1="555" y1="275" x2="555" y2="262" stroke="#00D2FF" stroke-width="3.5"/>
-        <!-- Pit lane -->
         <rect x="130" y="267" width="80" height="5" rx="1" fill="#E8002D" opacity="0.4"/>
         <rect x="130" y="267" width="80" height="5" rx="1" fill="none" stroke="#E8002D" stroke-width="0.5" opacity="0.6"/>
         <text x="170" y="260" text-anchor="middle" fill="#333" font-family="monospace" font-size="7.5" letter-spacing="1">PIT LANE</text>
-        <!-- Corner labels -->
         <text x="60" y="194" fill="#2e2e2e" font-family="monospace" font-size="7" text-anchor="middle">STE</text>
         <text x="60" y="203" fill="#2e2e2e" font-family="monospace" font-size="7" text-anchor="middle">DEVOTE</text>
         <text x="157" y="38" fill="#2e2e2e" font-family="monospace" font-size="7" text-anchor="middle">BEAU</text>
@@ -736,66 +793,45 @@ Pit window timing: optimal ✓</div></div>
         <text x="478" y="102" fill="#2e2e2e" font-family="monospace" font-size="7" text-anchor="middle">CASINO</text>
         <text x="599" y="196" fill="#2e2e2e" font-family="monospace" font-size="7" text-anchor="middle">LOEWS</text>
         <text x="383" y="291" fill="#2e2e2e" font-family="monospace" font-size="7" text-anchor="middle">TABAC</text>
-        <!-- S/F line -->
         <line x1="81" y1="252" x2="99" y2="257" stroke="#666" stroke-width="2.5"/>
         <text x="68" y="268" fill="#555" font-family="monospace" font-size="7.5" text-anchor="middle">S/F</text>
 
-        <!-- F1 CAR - top-down detailed -->
         <g id="f1car" transform="translate(90,255) rotate(180) scale(0.52)">
-          <!-- Shadow -->
           <ellipse cx="0" cy="7" rx="20" ry="6" fill="#000" opacity="0.5"/>
-          <!-- Floor/diffuser -->
           <path d="M-20,4 L20,4 L22,2 L22,-2 L20,-4 L-20,-4 Z" fill="#aa0018"/>
-          <!-- Body -->
           <path d="M-18,-6 L16,-8 Q20,-8 23,-5 Q25,-2 23,3 L16,6 L-18,6 Q-22,5 -23,0 Q-22,-5 -18,-6 Z" fill="#E8002D"/>
-          <!-- Body highlight -->
           <path d="M-14,-5 L12,-7 L14,-4 L-14,-3 Z" fill="#ff2040" opacity="0.4"/>
-          <!-- Sidepod -->
           <path d="M-8,-4 L10,-6 Q14,-6 15,-3 L15,3 Q14,5 10,5 L-8,5 Z" fill="#cc0020"/>
-          <!-- Cockpit -->
           <ellipse cx="2" cy="0" rx="7" ry="5" fill="#0a0a0a"/>
           <ellipse cx="3" cy="-0.5" rx="5" ry="3" fill="#111"/>
-          <!-- Halo -->
           <path d="M-4,-5 Q2,-9 8,-5" fill="none" stroke="#1a1a1a" stroke-width="2.5"/>
           <rect x="-1" y="-9" width="5" height="9" rx="1.5" fill="#141414"/>
-          <!-- Front wing -->
           <rect x="16" y="-10" width="12" height="4" rx="1" fill="#cc0020"/>
           <rect x="18" y="-7" width="8" height="3" rx="0.5" fill="#aa0018"/>
-          <!-- Rear wing -->
           <rect x="-26" y="-9" width="10" height="4" rx="1" fill="#cc0020"/>
           <rect x="-24" y="-6" width="6" height="3" rx="0.5" fill="#aa0018"/>
-          <!-- Front wheels -->
           <ellipse cx="17" cy="-8" rx="5.5" ry="4" fill="#0d0d0d"/>
           <ellipse cx="17" cy="8" rx="5.5" ry="4" fill="#0d0d0d"/>
           <ellipse cx="17" cy="-8" rx="2.5" ry="1.8" fill="#1a1a1a"/>
           <ellipse cx="17" cy="8" rx="2.5" ry="1.8" fill="#1a1a1a"/>
-          <!-- Rear wheels -->
           <ellipse cx="-16" cy="-8" rx="6" ry="4.5" fill="#0d0d0d"/>
           <ellipse cx="-16" cy="8" rx="6" ry="4.5" fill="#0d0d0d"/>
           <ellipse cx="-16" cy="-8" rx="2.8" ry="2" fill="#1a1a1a"/>
           <ellipse cx="-16" cy="8" rx="2.8" ry="2" fill="#1a1a1a"/>
-          <!-- Exhaust -->
           <ellipse id="exhaust" cx="-22" cy="0" rx="4" ry="2" fill="#ff4400" opacity="0.8"/>
-          <!-- Number -->
           <text x="2" y="1.8" text-anchor="middle" fill="#fff" font-size="4.5" font-weight="bold" font-family="Arial">16</text>
-          <!-- Suspension arms -->
           <line x1="13" y1="-5" x2="16" y2="-7" stroke="#333" stroke-width="1.5"/>
           <line x1="13" y1="5" x2="16" y2="7" stroke="#333" stroke-width="1.5"/>
           <line x1="-19" y1="-5" x2="-16" y2="-7" stroke="#333" stroke-width="1.5"/>
           <line x1="-19" y1="5" x2="-16" y2="7" stroke="#333" stroke-width="1.5"/>
         </g>
 
-        <!-- Lap counter -->
         <rect x="598" y="8" width="94" height="44" rx="2" fill="#060606" stroke="#1e1e1e" stroke-width="1"/>
         <text x="645" y="23" text-anchor="middle" fill="#333" font-family="monospace" font-size="7.5" letter-spacing="1">LAP</text>
         <text id="svg-lap" x="645" y="44" text-anchor="middle" fill="#E8002D" font-family="monospace" font-size="20" font-weight="bold">1/78</text>
-
-        <!-- Lap time -->
         <rect x="8" y="8" width="100" height="44" rx="2" fill="#060606" stroke="#1e1e1e" stroke-width="1"/>
         <text x="58" y="23" text-anchor="middle" fill="#333" font-family="monospace" font-size="7" letter-spacing="1">LAP TIME</text>
         <text id="svg-laptime" x="58" y="44" text-anchor="middle" fill="#FFD700" font-family="monospace" font-size="15" font-weight="bold">1:15.2</text>
-
-        <!-- Position -->
         <rect x="8" y="58" width="60" height="32" rx="2" fill="#060606" stroke="#1e1e1e" stroke-width="1"/>
         <text x="38" y="71" text-anchor="middle" fill="#333" font-family="monospace" font-size="6.5" letter-spacing="1">POS</text>
         <text id="svg-pos" x="38" y="86" text-anchor="middle" fill="#00D2FF" font-family="monospace" font-size="14" font-weight="bold">P3</text>
@@ -865,14 +901,93 @@ Pit window timing: optimal ✓</div></div>
 </div><!-- end #main-page -->
 
 <script>
-// Ensure main page shows after cockpit intro
+// ============================================
+// INTRO — Speed HUD fluctuation
+// ============================================
+const spdEl = document.getElementById('hud-spd');
+if(spdEl){
+  setInterval(() => {
+    spdEl.textContent = (282 + Math.floor(Math.random() * 12)).toString();
+  }, 120);
+}
+
+// Speed streaks
+const so = document.getElementById('speedOverlay');
+if(so){
+  for(let i = 0; i < 18; i++){
+    const s = document.createElement('div');
+    s.className = 'speed-streak';
+    s.style.top = (5 + Math.random() * 90) + '%';
+    s.style.animationDelay = (Math.random() * 0.3) + 's';
+    s.style.animationDuration = (0.2 + Math.random() * 0.2) + 's';
+    s.style.width = (60 + Math.random() * 80) + 'px';
+    so.appendChild(s);
+  }
+}
+
+// Audio on click
+const introEl = document.getElementById('intro');
+if(introEl){
+  introEl.addEventListener('click', () => {
+    const a = document.getElementById('engine-audio');
+    if(a && a.paused) a.play().catch(()=>{});
+  }, { once: true });
+}
+
+// Title appears after 2s
+setTimeout(() => {
+  const t = document.getElementById('cockpit-title');
+  if(t){ t.style.transition = 'opacity 0.8s ease'; t.style.opacity = '1'; }
+}, 2000);
+
+// ============================================
+// INTRO DISMISS — fires at 5s (intro) + 500ms fade = 5.5s total
+// Fallback at 6.5s in case something stalls
+// ============================================
+function dismissIntro(){
+  const intro = document.getElementById('intro');
+  const a = document.getElementById('engine-audio');
+  if(!intro || intro.style.display === 'none') return; // already dismissed
+  intro.style.transition = 'opacity 1s ease';
+  intro.style.opacity = '0';
+  if(a){ setTimeout(()=>{ a.pause(); }, 1000); }
+  setTimeout(() => {
+    intro.style.display = 'none';
+    const mp = document.getElementById('main-page');
+    if(mp) mp.classList.add('visible');
+    document.querySelectorAll('.reveal').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if(r.top < window.innerHeight) el.classList.add('shown');
+    });
+  }, 1000);
+}
+
+setTimeout(dismissIntro, 5000);
+// Hard fallback — guarantees no black screen
 setTimeout(() => {
   const intro = document.getElementById('intro');
-  if(intro){ intro.style.transition='opacity 0.5s ease'; intro.style.opacity='0'; setTimeout(()=>{ intro.style.display='none'; }, 500); }
-  const mp = document.getElementById('main-page');
-  if(mp){ mp.classList.add('visible'); }
-  document.querySelectorAll('.reveal').forEach(el => el.classList.add('shown'));
+  if(intro && intro.style.display !== 'none'){
+    intro.style.display = 'none';
+    const mp = document.getElementById('main-page');
+    if(mp) mp.classList.add('visible');
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('shown'));
+  }
 }, 6500);
+
+function skipIntro() {
+  const intro = document.getElementById('intro');
+  const a = document.getElementById('engine-audio');
+  if(!intro) return;
+  intro.style.transition = 'opacity 0.4s ease';
+  intro.style.opacity = '0';
+  if(a) a.pause();
+  setTimeout(() => {
+    intro.style.display = 'none';
+    const mp = document.getElementById('main-page');
+    if(mp) mp.classList.add('visible');
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('shown'));
+  }, 400);
+}
 
 // ============================================
 // SCROLL REVEAL
@@ -914,7 +1029,6 @@ const trackPath=[
 const PATH_LEN=trackPath.length;
 const TOTAL_LAPS=78;
 const compColors={SOFT:'#ff4444',MEDIUM:'#FFD700',HARD:'#cccccc'};
-const sColors={1:'#E8002D',2:'#FFD700',3:'#00D2FF'};
 const reasons={
   'STAY OUT':['Track position too valuable — stay out.','Fresh tyre stint — no advantage to pit yet.','Degradation within limits — monitor next 3 laps.','Undercut window not open yet.'],
   'PIT NOW':['Tyre cliff approaching — pit now.','Optimal undercut window open.','Delta crossing 0.7s threshold — commit.','Safety Car window — take the free stop.'],
@@ -966,7 +1080,6 @@ function startSim(){
     const ex=document.getElementById('exhaust');
     if(ex)ex.setAttribute('opacity',Math.random()>.4?'0.9':'0.3');
 
-    // sector update
     const sd=document.getElementById('sim-sector-display');
     if(sd){
       const sc=['<span style="color:'+(p.s===1?'#E8002D':'#2a2a2a')+'">■</span><span style="color:#333;font-size:0.55rem"> S1</span>',
