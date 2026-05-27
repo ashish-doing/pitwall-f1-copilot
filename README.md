@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=900&size=32&duration=3000&pause=1000&color=E8002D&center=true&vCenter=true&width=600&lines=PitWall+%E2%80%94+F1+Race+Strategy+Copilot;IBM+SkillsBuild+AI+Builders+Challenge" alt="PitWall" />
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=900&size=28&duration=3000&pause=1000&color=E8002D&center=true&vCenter=true&width=800&lines=PitWall+%E2%80%94+F1+Race+Strategy+Copilot;IBM+SkillsBuild+AI+Builders+Challenge" alt="PitWall" />
 
 <br/>
 
@@ -22,6 +22,13 @@
 
 > **IBM SkillsBuild AI Builders Challenge — May 2026**
 > An AI-powered F1 race strategy copilot that tells teams *when to pit* using real telemetry, IBM Granite reasoning, Docling regulation parsing, and a Q-Learning agent trained on 23,400 real lap decisions.
+
+<br/>
+
+<p>
+  <a href="https://huggingface.co/spaces/ashish-doing/pitwall-f1-copilot"><img src="https://img.shields.io/badge/%F0%9F%9A%80%20Live%20Demo-HuggingFace%20Spaces-FF9D00?style=for-the-badge" /></a>
+  <a href="https://ashish-doing.github.io/pitwall-f1-copilot"><img src="https://img.shields.io/badge/%F0%9F%8F%81%20Landing%20Page-GitHub%20Pages-E8002D?style=for-the-badge" /></a>
+</p>
 
 </div>
 
@@ -214,23 +221,25 @@ Output per recommendation: decision label + full Q-values for all 3 actions + co
 
 ## Features
 
-**Tab 1 — Race Strategy Analysis**
-- Select any season (2022–2024), Grand Prix, and driver
+### Tab 1 — Race Strategy Analysis
+**Available options:** Season `2022` `2023` `2024` · Grand Prix: any from that season (e.g. `Monaco` `Silverstone` `Bahrain`) · Driver: any code (e.g. `LEC` `VER` `HAM` `SAI` `NOR`)
+
 - FastF1 loads real official timing data: total laps, best lap, compounds, pit stop laps
 - IBM Granite + Docling regulation context → 3-paragraph strategy breakdown
 - Identifies suboptimal decisions and proposes alternatives
 
-**Tab 2 — Live Pit Window Advisor**
-- Input current race state via sliders: lap, compound, tyre age, delta
-- SOFT / MEDIUM / HARD / INTERMEDIATE / WET compound support
-- IBM Granite outputs a direct recommendation with reasoning
+### Tab 2 — Live Pit Window Advisor
+**Available options:** Current Lap `1–70` · Tyre Age `1–50` · Delta any float (e.g. `0.5`) · Compound `SOFT` `MEDIUM` `HARD` `INTERMEDIATE` `WET`
+
+- IBM Granite outputs a direct pit/stay-out recommendation with reasoning
 - Simulates real-time pit wall decision support
 
-**Tab 3 — RL Pit Optimizer**
+### Tab 3 — RL Pit Optimizer
+**Available options:** Tyre Age `1–55` · Laps Remaining `1–60` · Delta any float · Compound `SOFT` `MEDIUM` `HARD` `INTERMEDIATE` `WET`
+
 - Q-Learning agent trained on 23,400 real lap decisions
-- Full Q-value breakdown for all 3 actions
+- Full Q-value breakdown for all 3 actions — not a black box
 - Confidence score from Q-value spread formula
-- Fully explainable output — shows exactly why it recommends
 
 ---
 
