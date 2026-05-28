@@ -40,16 +40,16 @@
 ![PitWall landing page hero section](docs/screenshots/landing-hero.png)
 
 ### Tab 1 — Race Strategy Analysis (IBM Granite + Docling)
-![Race Strategy Analysis — IBM Granite analyzing SAI's Silverstone 2023 strategy](docs/screenshots/tab1-strategy-analysis.png)
-*Real FastF1 telemetry + IBM Granite 3-paragraph analysis + FIA regulation check. SAI · Silverstone 2023 · MEDIUM → HARD · Pit Lap 26*
+![Race Strategy Analysis — IBM Granite analyzing ALO's Suzuka 2022 strategy with tyre degradation chart](docs/screenshots/tab1-strategy-analysis.png)
+*Real FastF1 telemetry + IBM Granite 3-paragraph analysis + FIA regulation check + tyre degradation chart. ALO · Suzuka 2022 · INTERMEDIATE → WET · 3 pit stops*
 
 ### Tab 2 — Live Pit Window Advisor
-![Live Pit Window Advisor — IBM Granite recommendation for WET compound](docs/screenshots/tab2-pit-advisor.png)
-*IBM Granite direct stay-out/pit recommendation with reasoning. WET · Lap 17 · +1.0s delta*
+![Live Pit Window Advisor — IBM Granite formatted DECISION + REASONING + RISK recommendation](docs/screenshots/tab2-pit-advisor.png)
+*IBM Granite direct recommendation with DECISION · REASONING · RISK IF IGNORED format. INTERMEDIATE · Lap 29 · 11 laps · +0.5s delta*
 
 ### Tab 3 — RL Pit Optimizer
-![RL Pit Optimizer — Q-Learning agent with full Q-values and 54.2% confidence](docs/screenshots/tab3-rl-optimizer.png)
-*Q-Learning agent trained on 23,400 real F1 decisions. Full Q-value breakdown — not a black box. HARD · 19 laps · 54.2% confidence*
+![RL Pit Optimizer — Q-Learning agent STAY OUT with 95% confidence, Q-values 73.824 vs 5.006 vs 7.176](docs/screenshots/tab3-rl-optimizer.png)
+*Q-Learning agent trained on 23,400 real F1 decisions. Full Q-value breakdown — not a black box. SOFT · 19 laps · STAY OUT · 95% confidence*
 
 ### Live Race Simulation
 ![Live Race Simulation — Monaco circuit with RL agent STAY OUT, 61% confidence](docs/screenshots/landing-sim.png)
