@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 <img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=900&size=28&duration=3000&pause=1000&color=E8002D&center=true&vCenter=true&width=800&lines=PitWall+%E2%80%94+F1+Race+Strategy+Copilot;IBM+SkillsBuild+AI+Builders+Challenge" alt="PitWall" />
 
@@ -290,6 +290,21 @@ pitwall-f1-copilot/
     ├── docling_parser.py          FIA regulations parser (Docling)
     └── rl_optimizer.py            Q-Learning RL agent
 ```
+
+## Terminology
+
+| Term | Meaning |
+|---|---|
+| **Stay Out** | Keep current tyres, do not pit this lap |
+| **Pit Now** | Come into the pit lane this lap for a tyre change |
+| **Pit in 2** | Stay out for 2 more laps, then pit |
+| **Q-Value** | The agent's learned score for each action — higher = better |
+| **Confidence** | How decisive the agent is: gap between best and second-best Q-value |
+| **Tyre Age** | Number of laps completed on the current set of tyres |
+| **Lap Delta** | How much slower the current lap is vs the driver's best lap (seconds) |
+| **Compound** | Tyre type: SOFT (fastest/least durable) · MEDIUM · HARD (slowest/most durable) |
+| **Stint** | A continuous run on one set of tyres between pit stops |
+| **Undercut** | Pitting earlier than a rival to gain track position on fresher tyres |
 
 ---
 
