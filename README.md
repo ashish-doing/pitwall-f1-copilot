@@ -228,6 +228,7 @@ Output per recommendation: decision label + full Q-values for all 3 actions + co
 - Driver: `LEC` · `VER` · `HAM` · `SAI` · `NOR` · `RUS` · `PER` · and more
 
 - FastF1 loads real official timing data: total laps, best lap, compounds, pit stop laps
+- First load per race fetches live telemetry (~60s); subsequent loads use cache (~5s)
 - IBM Granite + Docling regulation context → 3-paragraph strategy breakdown
 - Identifies suboptimal decisions and proposes alternatives
 
