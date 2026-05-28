@@ -169,6 +169,15 @@ def get_rl_recommendation(tyre_age: int, lap_delta: float,
     labels = {0: "✅ STAY OUT", 1: "🔴 PIT NOW", 2: "⚠️ PIT IN 2 LAPS"}
 
     sorted_q = np.sort(q_values)[::-1]
+    q_max = abs(sorted_q[0])
+
+    # If q_table is near zero (untrained state), retrain
+    if q_max < 0.1:
+        q_table = train_agent()
+        q_values = q_table[state]
+        action = int(np.argmax(q_values))
+        sorted_q = np.sort(q_values)[::-1]
+
     spread = (sorted_q[0] - sorted_q[1]) / (abs(sorted_q[0]) + 1e-6)
     confidence = float(np.clip(spread * 180 + 35, 35.0, 95.0))
 

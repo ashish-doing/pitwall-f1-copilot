@@ -49,14 +49,21 @@ Provide a concise strategic analysis in 3 paragraphs."""
     return query_granite(prompt)
 
 def recommend_pit_window(lap: int, compound: str, tyre_life: int, lap_time_delta: float) -> str:
-    prompt = f"""You are an F1 pit wall strategist. Given:
+    prompt = f"""You are an F1 pit wall strategist. Given the current race state:
 - Current lap: {lap}
-- Current tyre compound: {compound}
+- Tyre compound: {compound}
 - Tyre age: {tyre_life} laps
-- Lap time delta vs best lap: +{lap_time_delta:.3f}s
+- Lap time delta vs personal best: +{lap_time_delta:.3f}s
 
-Should the driver pit now, in 2-3 laps, or stay out?
-Give a direct recommendation with brief reasoning in 2-3 sentences."""
+Respond in exactly this format:
+DECISION: [PIT NOW / PIT IN 2-3 LAPS / STAY OUT]
+
+REASONING:
+- [One sentence on tyre condition]
+- [One sentence on timing/track position risk]
+- [One sentence on recommended action]
+
+RISK IF IGNORED: [One sentence on consequence of not following recommendation]"""
     return query_granite(prompt)
 
 if __name__ == "__main__":
