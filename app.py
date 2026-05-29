@@ -71,7 +71,14 @@ def build_degradation_chart(session, driver, summary):
               labelcolor='#F0F0F0', fontsize=8, loc='upper right')
 
     plt.tight_layout()
-    return fig
+    import io
+    from PIL import Image
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', dpi=120, bbox_inches='tight',
+                facecolor='#0e0e0e', edgecolor='none')
+    buf.seek(0)
+    plt.close(fig)
+    return Image.open(buf)
 
 def load_and_analyze(year, grand_prix, driver):
     try:
@@ -123,7 +130,7 @@ with gr.Blocks(title="PitWall — F1 Race Strategy Copilot") as app:
         analyze_btn = gr.Button("🔍 Analyze Strategy", variant="primary")
         summary_out = gr.Markdown(label="Race Summary")
         analysis_out = gr.Textbox(label="🤖 IBM Granite Strategy Analysis", lines=12, interactive=False)
-        deg_chart = gr.Plot(label="📈 Tyre Degradation — Lap Times by Compound")
+        deg_chart = gr.Image(label="📈 Tyre Degradation — Lap Times by Compound")
         analyze_btn.click(fn=load_and_analyze, inputs=[year_input, gp_input, driver_input], outputs=[summary_out, analysis_out, deg_chart])
 
     with gr.Tab("⏱️ Live Pit Window Advisor"):
