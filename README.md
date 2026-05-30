@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 <img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=900&size=28&duration=3000&pause=1000&color=E8002D&center=true&vCenter=true&width=800&lines=PitWall+%E2%80%94+F1+Race+Strategy+Copilot;IBM+SkillsBuild+AI+Builders+Challenge" alt="PitWall" />
 
@@ -16,11 +16,12 @@
 <p>
   <a href="https://huggingface.co/spaces/ashish-doing/pitwall-f1-copilot"><img src="https://img.shields.io/badge/%F0%9F%9A%80%20Live%20Demo-HuggingFace%20Spaces-FF9D00?style=for-the-badge" /></a>
   <a href="https://ashish-doing.github.io/pitwall-f1-copilot"><img src="https://img.shields.io/badge/%F0%9F%8F%81%20Landing%20Page-GitHub%20Pages-E8002D?style=for-the-badge" /></a>
+  <a href="https://youtu.be/hbiEMHptY1M"><img src="https://img.shields.io/badge/Demo%20Video-YouTube-red?style=for-the-badge&logo=youtube" /></a>
 </p>
 
 <br/>
 
-> **IBM SkillsBuild AI Builders Challenge — May 2026**
+> **IBM SkillsBuild AI Builders Challenge � May 2026**
 > An AI-powered F1 race strategy copilot that tells teams *when to pit* using real telemetry, IBM Granite reasoning, Docling regulation parsing, and a Q-Learning agent trained on 23,400 real lap decisions.
 
 <br/>
@@ -28,9 +29,22 @@
 <p>
   <a href="https://huggingface.co/spaces/ashish-doing/pitwall-f1-copilot"><img src="https://img.shields.io/badge/%F0%9F%9A%80%20Live%20Demo-HuggingFace%20Spaces-FF9D00?style=for-the-badge" /></a>
   <a href="https://ashish-doing.github.io/pitwall-f1-copilot"><img src="https://img.shields.io/badge/%F0%9F%8F%81%20Landing%20Page-GitHub%20Pages-E8002D?style=for-the-badge" /></a>
+  <a href="https://youtu.be/hbiEMHptY1M"><img src="https://img.shields.io/badge/Demo%20Video-YouTube-red?style=for-the-badge&logo=youtube" /></a>
 </p>
 
 </div>
+
+---
+
+## Why PitWall Wins
+
+| Judging Criterion | How PitWall Delivers |
+|---|---|
+| **Technical Execution** | RL + LLM + real telemetry pipeline � 3 working tabs � live deployed |
+| **IBM Technology** | IBM Granite 4.1 8B + IBM Docling � both used in core pipeline |
+| **Innovation** | Only submission combining RL agent + LLM + real F1 API + regulation parsing |
+| **Impact** | Democratizes $40�50M strategy tools � free � open source |
+| **Feasibility** | Live on HuggingFace Spaces � all features working � real data |
 
 ---
 
@@ -39,21 +53,21 @@
 ### Landing Page
 ![PitWall landing page hero section](docs/screenshots/landing-hero.png)
 
-### Tab 1 — Race Strategy Analysis (IBM Granite + Docling)
-![Race Strategy Analysis — IBM Granite analyzing ALO's Suzuka 2022 strategy with tyre degradation chart](docs/screenshots/tab1-strategy-analysis.png)
-*Real FastF1 telemetry + IBM Granite 3-paragraph analysis + FIA regulation check + tyre degradation chart. ALO · Suzuka 2022 · INTERMEDIATE → WET · 3 pit stops*
+### Tab 1 � Race Strategy Analysis (IBM Granite + Docling)
+![Race Strategy Analysis � IBM Granite analyzing ALO's Suzuka 2022 strategy with tyre degradation chart](docs/screenshots/tab1-strategy-analysis.png)
+*Real FastF1 telemetry + IBM Granite 3-paragraph analysis + FIA regulation check + tyre degradation chart. ALO � Suzuka 2022 � INTERMEDIATE ? WET � 3 pit stops*
 
-### Tab 2 — Live Pit Window Advisor
-![Live Pit Window Advisor — IBM Granite formatted DECISION + REASONING + RISK recommendation](docs/screenshots/tab2-pit-advisor.png)
-*IBM Granite direct recommendation with DECISION · REASONING · RISK IF IGNORED format. INTERMEDIATE · Lap 29 · 11 laps · +0.5s delta*
+### Tab 2 � Live Pit Window Advisor
+![Live Pit Window Advisor � IBM Granite formatted DECISION + REASONING + RISK recommendation](docs/screenshots/tab2-pit-advisor.png)
+*IBM Granite direct recommendation with DECISION � REASONING � RISK IF IGNORED format. INTERMEDIATE � Lap 29 � 11 laps � +0.5s delta*
 
-### Tab 3 — RL Pit Optimizer
-![RL Pit Optimizer — Q-Learning agent STAY OUT with 95% confidence, Q-values 73.824 vs 5.006 vs 7.176](docs/screenshots/tab3-rl-optimizer.png)
-*Q-Learning agent trained on 23,400 real F1 decisions. Full Q-value breakdown — not a black box. SOFT · 19 laps · STAY OUT · 95% confidence*
+### Tab 3 � RL Pit Optimizer
+![RL Pit Optimizer � Q-Learning agent STAY OUT with 95% confidence, Q-values 73.824 vs 5.006 vs 7.176](docs/screenshots/tab3-rl-optimizer.png)
+*Q-Learning agent trained on 23,400 real F1 decisions. Full Q-value breakdown � not a black box. SOFT � 19 laps � STAY OUT � 95% confidence*
 
 ### Live Race Simulation
-![Live Race Simulation — Monaco circuit with RL agent STAY OUT, 61% confidence](docs/screenshots/landing-sim.png)
-*Interactive Monaco circuit · RL agent live decisions · STAY OUT · 61% confidence · Q-values displayed*
+![Live Race Simulation � Monaco circuit with RL agent STAY OUT, 61% confidence](docs/screenshots/landing-sim.png)
+*Interactive Monaco circuit � RL agent live decisions � STAY OUT � 61% confidence � Q-values displayed*
 
 ---
 
@@ -61,13 +75,13 @@
 
 F1 race strategy is one of the most complex real-time decision problems in professional sport. Every lap, a team must decide:
 
-- **When to pit** — too early and you lose track position; too late and tyres fall off the cliff
-- **Which compound** — SOFT for pace, HARD for durability, MEDIUM as a balance
+- **When to pit** � too early and you lose track position; too late and tyres fall off the cliff
+- **Which compound** � SOFT for pace, HARD for durability, MEDIUM as a balance
 - **How to react** to Safety Cars, undercuts, and competitors' strategies
 
 Top teams spend **millions of dollars** on proprietary strategy software and employ entire departments of data scientists. Independent analysts, students, and fans have **zero access** to these tools.
 
-Meanwhile, F1 publishes real telemetry via its official API — lap times, tyre compounds, pit stop laps, speed traces — all publicly available, but requiring significant technical effort to interpret.
+Meanwhile, F1 publishes real telemetry via its official API � lap times, tyre compounds, pit stop laps, speed traces � all publicly available, but requiring significant technical effort to interpret.
 
 **The gap: rich data exists. Expert AI tools don't.**
 
@@ -78,10 +92,10 @@ Meanwhile, F1 publishes real telemetry via its official API — lap times, tyre 
 **PitWall** bridges this gap with three AI systems working in concert:
 
 ```
-FastF1 API ──► IBM Docling ──► IBM Granite 4.1 8B ──► Strategy Analysis
+FastF1 API --? IBM Docling --? IBM Granite 4.1 8B --? Strategy Analysis
 (Real telemetry)  (FIA PDF parse)  (LLM reasoning)       (Tabs 1 & 2)
 
-FastF1 API ──► Q-Learning Agent ──► Pit Decision + Q-Values
+FastF1 API --? Q-Learning Agent --? Pit Decision + Q-Values
 (23,400 laps)   (RL policy)          (Tab 3)
 ```
 
@@ -91,62 +105,62 @@ FastF1 API ──► Q-Learning Agent ──► Pit Decision + Q-Values
 
 ```
 pitwall-f1-copilot/
-├── FastF1 Telemetry Layer
-│     └── fastf1_loader.py       Real lap times, tyre compounds,
-│                                pit stop laps — 2022–2024 seasons
-│
-├── IBM Technology Layer
-│     ├── docling_parser.py      Parses FIA Sporting Regulations PDF
-│     │                          Extracts compound rules, pit windows
-│     └── granite_engine.py      IBM Granite 4.1 8B via Groq free tier
-│                                Receives telemetry + regulation context
-│                                Outputs explainable strategy analysis
-│
-├── RL Agent Layer
-│     └── rl_optimizer.py        Q-Learning agent
-│                                State: tyre age × delta × laps rem × compound
-│                                Actions: Stay Out / Pit Now / Pit in 2
-│                                Trained on 23,400 real lap decisions
-│
-└── UI Layer
-      ├── app.py                 HuggingFace Spaces entry point
-      └── main.py                Local Gradio UI (port 7861)
++-- FastF1 Telemetry Layer
+�     +-- fastf1_loader.py       Real lap times, tyre compounds,
+�                                pit stop laps � 2022�2024 seasons
+�
++-- IBM Technology Layer
+�     +-- docling_parser.py      Parses FIA Sporting Regulations PDF
+�     �                          Extracts compound rules, pit windows
+�     +-- granite_engine.py      IBM Granite 4.1 8B via Groq free tier
+�                                Receives telemetry + regulation context
+�                                Outputs explainable strategy analysis
+�
++-- RL Agent Layer
+�     +-- rl_optimizer.py        Q-Learning agent
+�                                State: tyre age � delta � laps rem � compound
+�                                Actions: Stay Out / Pit Now / Pit in 2
+�                                Trained on 23,400 real lap decisions
+�
++-- UI Layer
+      +-- app.py                 HuggingFace Spaces entry point
+      +-- main.py                Local Gradio UI (port 7861)
 ```
 
 ### Full System Diagram
 
 ```
-FastF1 API (2022–2024 Real Telemetry)
-         │
-         ▼
-┌─────────────────────┐     ┌──────────────────────┐
-│  fastf1_loader.py   │     │  docling_parser.py   │
-│  · Lap times        │     │  · FIA Regulations   │
-│  · Tyre compounds   │     │  · Compound rules    │
-│  · Pit stop laps    │     │  · Pit window reqs   │
-│  · Driver stints    │     └──────────┬───────────┘
-└──────────┬──────────┘                │
-           └──────────┬────────────────┘
-                      │ (telemetry + regulations)
-                      ▼
-           ┌──────────────────────┐
-           │   granite_engine.py  │
-           │   IBM Granite 4.1 8B │
-           │   (Groq free tier)   │
-           └──────────┬───────────┘
-                      │
-           ┌──────────┴───────────┐
-           ▼                      ▼
+FastF1 API (2022�2024 Real Telemetry)
+         �
+         ?
++---------------------+     +----------------------+
+�  fastf1_loader.py   �     �  docling_parser.py   �
+�  � Lap times        �     �  � FIA Regulations   �
+�  � Tyre compounds   �     �  � Compound rules    �
+�  � Pit stop laps    �     �  � Pit window reqs   �
+�  � Driver stints    �     +----------------------+
++---------------------+                �
+           +---------------------------+
+                      � (telemetry + regulations)
+                      ?
+           +----------------------+
+           �   granite_engine.py  �
+           �   IBM Granite 4.1 8B �
+           �   (Groq free tier)   �
+           +----------------------+
+                      �
+           +----------------------+
+           ?                      ?
   Tab 1: Race Strategy    Tab 2: Pit Window
   Analysis (3-paragraph)  Advisor (direct rec.)
 
-                ┌──────────────────────┐
-                │    rl_optimizer.py   │
-                │    Q-Learning Agent  │
-                │    23,400 decisions  │
-                │    5 real F1 races   │
-                └──────────┬───────────┘
-                           ▼
+                +----------------------+
+                �    rl_optimizer.py   �
+                �    Q-Learning Agent  �
+                �    23,400 decisions  �
+                �    5 real F1 races   �
+                +----------------------+
+                           ?
                   Tab 3: RL Optimizer
                   Decision + Q-Values
                   + Confidence Score
@@ -160,11 +174,11 @@ FastF1 API (2022–2024 Real Telemetry)
 
 The core reasoning engine used across two tabs:
 
-**Tab 1 — Race Strategy Analysis**
+**Tab 1 � Race Strategy Analysis**
 Granite receives real FastF1 telemetry (lap times, compounds, pit stop laps, best lap) combined with FIA regulation context extracted by Docling. It generates a 3-paragraph strategic analysis covering pit timing assessment, regulation compliance, and alternative strategy recommendations.
 
-**Tab 2 — Live Pit Window Advisor**
-Given real-time race state (current lap, compound, tyre age, lap time delta), Granite outputs a direct pit/stay-out recommendation with reasoning — simulating what a pit wall engineer would advise lap-by-lap.
+**Tab 2 � Live Pit Window Advisor**
+Given real-time race state (current lap, compound, tyre age, lap time delta), Granite outputs a direct pit/stay-out recommendation with reasoning � simulating what a pit wall engineer would advise lap-by-lap.
 
 ### IBM Docling
 
@@ -185,13 +199,13 @@ The agent in `rl_optimizer.py` was trained on real F1 race data, not simulations
 | Property | Detail |
 |---|---|
 | Training data | 23,400 lap decisions from 5 real F1 races |
-| Seasons | 2023–2024 via FastF1 |
-| State space | Tyre age × delta × laps remaining × compound (4D) |
-| Action space | Stay Out · Pit Now · Pit in 2 Laps |
+| Seasons | 2023�2024 via FastF1 |
+| State space | Tyre age � delta � laps remaining � compound (4D) |
+| Action space | Stay Out � Pit Now � Pit in 2 Laps |
 | Reward signal | Based on actual race outcomes |
 | Policy file | `data/q_table.pkl` |
 
-Output per recommendation: decision label + full Q-values for all 3 actions + confidence score derived from Q-value spread — fully explainable, not a black box.
+Output per recommendation: decision label + full Q-values for all 3 actions + confidence score derived from Q-value spread � fully explainable, not a black box.
 
 **Training races:**
 
@@ -204,7 +218,7 @@ Output per recommendation: decision label + full Q-values for all 3 actions + co
 | Bahrain Grand Prix | 2023 | ~4,680 |
 | **Total** | | **23,400** |
 
-**Example output — Monaco 2024 conditions (MEDIUM, 25 laps, +0.8s delta):**
+**Example output � Monaco 2024 conditions (MEDIUM, 25 laps, +0.8s delta):**
 ```json
 {
   "decision": "PIT NOW",
@@ -221,36 +235,36 @@ Output per recommendation: decision label + full Q-values for all 3 actions + co
 
 ## Features
 
-### Tab 1 — Race Strategy Analysis
+### Tab 1 � Race Strategy Analysis
 **Available options:**
-- Season: `2022` · `2023` · `2024`
-- Grand Prix: `Monaco` · `Silverstone` · `Bahrain` · `Abu Dhabi` · `Monza` · `Spa` · `Suzuka` · and more
-- Driver: `LEC` · `VER` · `HAM` · `SAI` · `NOR` · `RUS` · `PER` · and more
+- Season: `2022` � `2023` � `2024`
+- Grand Prix: `Monaco` � `Silverstone` � `Bahrain` � `Abu Dhabi` � `Monza` � `Spa` � `Suzuka` � and more
+- Driver: `LEC` � `VER` � `HAM` � `SAI` � `NOR` � `RUS` � `PER` � and more
 
 - FastF1 loads real official timing data: total laps, best lap, compounds, pit stop laps
 - First load per race fetches live telemetry (~60s); subsequent loads use cache (~5s)
-- IBM Granite + Docling regulation context → 3-paragraph strategy breakdown
+- IBM Granite + Docling regulation context ? 3-paragraph strategy breakdown
 - Identifies suboptimal decisions and proposes alternatives
 
-### Tab 2 — Live Pit Window Advisor
+### Tab 2 � Live Pit Window Advisor
 **Available options:**
-- Current Lap: `1–70`
-- Tyre Age: `1–50 laps`
-- Lap Time Delta: any float (e.g. `0.5` · `1.2`)
-- Compound: `SOFT` · `MEDIUM` · `HARD` · `INTERMEDIATE` · `WET`
+- Current Lap: `1�70`
+- Tyre Age: `1�50 laps`
+- Lap Time Delta: any float (e.g. `0.5` � `1.2`)
+- Compound: `SOFT` � `MEDIUM` � `HARD` � `INTERMEDIATE` � `WET`
 
 - IBM Granite outputs a direct pit/stay-out recommendation with reasoning
 - Simulates real-time pit wall decision support
 
-### Tab 3 — RL Pit Optimizer
+### Tab 3 � RL Pit Optimizer
 **Available options:**
-- Tyre Age: `1–55 laps`
-- Laps Remaining: `1–60`
-- Lap Time Delta: any float (e.g. `0.8` · `1.5`)
-- Compound: `SOFT` · `MEDIUM` · `HARD` · `INTERMEDIATE` · `WET`
+- Tyre Age: `1�55 laps`
+- Laps Remaining: `1�60`
+- Lap Time Delta: any float (e.g. `0.8` � `1.5`)
+- Compound: `SOFT` � `MEDIUM` � `HARD` � `INTERMEDIATE` � `WET`
 
 - Q-Learning agent trained on 23,400 real lap decisions
-- Full Q-value breakdown for all 3 actions — not a black box
+- Full Q-value breakdown for all 3 actions � not a black box
 - Confidence score from Q-value spread formula
 
 ---
@@ -274,22 +288,22 @@ Output per recommendation: decision label + full Q-values for all 3 actions + co
 
 ```
 pitwall-f1-copilot/
-├── app.py                         HuggingFace Spaces entry point
-├── requirements.txt
-├── README.md
-├── index.html                     Landing page (GitHub Pages)
-├── data/
-│   ├── q_table.pkl                Trained RL policy (23,400 updates)
-│   ├── f1_regulations_summary.txt Docling-extracted FIA rules
-│   └── fia_sporting_regulations.pdf
-├── docs/
-│   └── screenshots/               README screenshots
-└── src/
-    ├── main.py                    Local Gradio UI — port 7861
-    ├── fastf1_loader.py           FastF1 telemetry pipeline
-    ├── granite_engine.py          IBM Granite via Groq/OpenAI client
-    ├── docling_parser.py          FIA regulations parser (Docling)
-    └── rl_optimizer.py            Q-Learning RL agent
++-- app.py                         HuggingFace Spaces entry point
++-- requirements.txt
++-- README.md
++-- index.html                     Landing page (GitHub Pages)
++-- data/
+�   +-- q_table.pkl                Trained RL policy (23,400 updates)
+�   +-- f1_regulations_summary.txt Docling-extracted FIA rules
+�   +-- fia_sporting_regulations.pdf
++-- docs/
+�   +-- screenshots/               README screenshots
++-- src/
+    +-- main.py                    Local Gradio UI � port 7861
+    +-- fastf1_loader.py           FastF1 telemetry pipeline
+    +-- granite_engine.py          IBM Granite via Groq/OpenAI client
+    +-- docling_parser.py          FIA regulations parser (Docling)
+    +-- rl_optimizer.py            Q-Learning RL agent
 ```
 
 ## Terminology
@@ -299,11 +313,11 @@ pitwall-f1-copilot/
 | **Stay Out** | Keep current tyres, do not pit this lap |
 | **Pit Now** | Come into the pit lane this lap for a tyre change |
 | **Pit in 2** | Stay out for 2 more laps, then pit |
-| **Q-Value** | The agent's learned score for each action — higher = better |
+| **Q-Value** | The agent's learned score for each action � higher = better |
 | **Confidence** | How decisive the agent is: gap between best and second-best Q-value |
 | **Tyre Age** | Number of laps completed on the current set of tyres |
 | **Lap Delta** | How much slower the current lap is vs the driver's best lap (seconds) |
-| **Compound** | Tyre type: SOFT (fastest/least durable) · MEDIUM · HARD (slowest/most durable) |
+| **Compound** | Tyre type: SOFT (fastest/least durable) � MEDIUM � HARD (slowest/most durable) |
 | **Stint** | A continuous run on one set of tyres between pit stops |
 | **Undercut** | Pitting earlier than a rival to gain track position on fresher tyres |
 
@@ -318,8 +332,8 @@ Select **Monaco 2024 + LEC** in Tab 1 and click **Analyze Strategy** to see IBM 
 
 ### HuggingFace Spaces Secrets
 ```
-GROQ_API_KEY   — Groq free tier API key
-HF_TOKEN       — HuggingFace token
+GROQ_API_KEY   � Groq free tier API key
+HF_TOKEN       � HuggingFace token
 ```
 
 ### Local Setup
@@ -333,7 +347,7 @@ pip install -r requirements.txt
 export GROQ_API_KEY=your_groq_api_key_here
 
 # Run locally
-python src/main.py    # → http://localhost:7861
+python src/main.py    # ? http://localhost:7861
 ```
 
 ### Requirements
@@ -364,7 +378,7 @@ docling
 
 ## Author
 
-**Ashish Kumar** — B.Tech ECE, IIIT Guwahati (Batch 2024)
+**Ashish Kumar** � B.Tech ECE, IIIT Guwahati (Batch 2024)
 
 [![GitHub](https://img.shields.io/badge/GitHub-ashish--doing-181717?style=flat-square&logo=github)](https://github.com/ashish-doing)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-ashish--kumar-0A66C2?style=flat-square&logo=linkedin)](https://linkedin.com/in/ashish-kumar-014aaa3b9)
@@ -374,14 +388,14 @@ docling
 
 ## License
 
-MIT — see [LICENSE](LICENSE) for details.
+MIT � see [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
 
-Built for the **IBM SkillsBuild AI Builders Challenge — May 2026**
+Built for the **IBM SkillsBuild AI Builders Challenge � May 2026**
 
-*Powered by IBM Granite · IBM Docling · FastF1 · Q-Learning RL*
+*Powered by IBM Granite � IBM Docling � FastF1 � Q-Learning RL*
 
 </div>
