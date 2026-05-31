@@ -13,16 +13,16 @@
   <a href="#"><img src="https://img.shields.io/badge/Python-3.10-3776AB?style=for-the-badge&logo=python&logoColor=white" /></a>
 </p>
 
+<br/>
+
+> **IBM SkillsBuild AI Builders Challenge — May 2026**
+> An AI-powered F1 race strategy copilot that tells teams *when to pit* using real telemetry, IBM Granite reasoning, Docling regulation parsing, and a Q-Learning agent trained on 23,400 real lap decisions.
+
 <p>
   <a href="https://huggingface.co/spaces/ashish-doing/pitwall-f1-copilot"><img src="https://img.shields.io/badge/%F0%9F%9A%80%20Live%20Demo-HuggingFace%20Spaces-FF9D00?style=for-the-badge" /></a>
   <a href="https://ashish-doing.github.io/pitwall-f1-copilot"><img src="https://img.shields.io/badge/%F0%9F%8F%81%20Landing%20Page-GitHub%20Pages-E8002D?style=for-the-badge" /></a>
   <a href="https://youtu.be/hbiEMHptY1M"><img src="https://img.shields.io/badge/Demo%20Video-YouTube-red?style=for-the-badge&logo=youtube" /></a>
 </p>
-
-<br/>
-
-> **IBM SkillsBuild AI Builders Challenge — May 2026**
-> An AI-powered F1 race strategy copilot that tells teams *when to pit* using real telemetry, IBM Granite reasoning, Docling regulation parsing, and a Q-Learning agent trained on 23,400 real lap decisions.
 
 <br/>
 
